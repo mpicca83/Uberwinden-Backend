@@ -1,4 +1,5 @@
 import ProductManager from '../dao/ProductManager.js'
+import { validateCreate, validateUpdate } from '../validators/productsValidators.js'
 import { Router } from 'express'
 export const router=Router()
 
@@ -51,30 +52,16 @@ router.get('/:pid', async(req, res) => {
     }
 })
 
-router.post('/', async(req, res) => {
+router.post('/', validateCreate, async(req, res) => {
 
     const {title, description, code, price, status=true, stock, category, thumbnails=[]} = req.body
-
-    if (!title || !description || !code || !price || !stock || !category) 
-        return res.status(400).json({error:'Todos los parametros son requeridos (title, description, code, price, stock, category)'})
-    
-    if(isNaN(price) || isNaN(stock))
-        return res.status(400).json({error:'Price y stock debe ser de formato numérico.'})
-    
-    let valorBoolean = status.toLowerCase()
-
-    if(valorBoolean==='true' || valorBoolean==='false'){
-        valorBoolean=JSON.parse(valorBoolean)
-    }else{
-        return res.status(400).json({error:'Status debe ser de formato booleano (true / false).'})
-    }
 
     const product = {
         title,
         description,
         code,
         price,
-        status: valorBoolean,
+        status,
         stock,
         category,
         thumbnails
@@ -96,7 +83,7 @@ router.post('/', async(req, res) => {
     }
 })
 
-router.put('/:pid', async(req, res) => {
+router.put('/:pid', validateUpdate, async(req, res) => {
 
     let pid = req.params.pid
     pid = Number(pid)
@@ -106,27 +93,6 @@ router.put('/:pid', async(req, res) => {
     }
 
     const data = req.body
-    const {price=0, stock=0, status=true} = data
-
-    const keysValidas = ['title', 'description', 'code', 'price', 'status', 'stock', 'category', 'thumbnails']
-    const keys = Object.keys(data)
-    const valido = keys.every(key => keysValidas.includes(key))
-
-    if(!valido){
-        return res.status(400).json({error:'Solo es posible modificar los siguientes parametros: title, description, code, price, status, stock, category, thumbnails'})
-    }
-
-    if(isNaN(price) || isNaN(stock))
-        return res.status(400).json({error:'Price y stock debe ser de formato numérico.'})
-
-    let valorBoolean = status.toLowerCase()
-
-    if(valorBoolean==='true' || valorBoolean==='false'){
-        valorBoolean=JSON.parse(valorBoolean)
-        data.status=valorBoolean
-    }else{
-        return res.status(400).json({error:'Status debe ser de formato booleano (true / false).'})
-    }
 
     try {
 
