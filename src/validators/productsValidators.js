@@ -27,7 +27,7 @@ export const validateCreate = [
             validationResult(req).throw()
             return next()
         } catch (error) {
-            res.status(403).json({ errors: error.array() });
+            res.status(400).json({ errors: error.array() });
         }
     }
 ]
@@ -73,7 +73,7 @@ export const validateUpdate = [
             validationResult(req).throw()
             return next()
         } catch (error) {
-            res.status(403).json({ errors: error.array() });
+            res.status(400).json({ errors: error.array() });
         }
     }
 ]

@@ -1,5 +1,6 @@
 import ProductManager from '../dao/ProductManager.js'
 import { validateCreate, validateUpdate } from '../validators/productsValidators.js'
+import { io } from '../app.js'
 import { Router } from 'express'
 export const router=Router()
 
@@ -70,10 +71,13 @@ router.post('/', validateCreate, async(req, res) => {
     try {
 
         const newProduct = await productManager.addProduct(product)
+
+        !newProduct.error && io.emit('productAdd',  newProduct )
+        
         return res.status(200).json(newProduct)
 
     } catch (error) {
-        
+
         return res.status(500).json(
             {
                 error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
@@ -98,9 +102,16 @@ router.put('/:pid', validateUpdate, async(req, res) => {
 
         const update = await productManager.updateProduct(pid, data)
 
-        update
-        ? res.status(200).json(update)
-        : res.status(400).json({error:`Not found. No existe un producto con el pid ${pid}`})
+        if(update){
+
+            const products = await productManager.getProducts()
+            io.emit('productsAll', { products })
+
+            return res.status(200).json(update)
+
+        }else{
+            return res.status(400).json({error:`Not found. No existe un producto con el pid ${pid}`})
+        }
 
     } catch (error) {
         
@@ -127,9 +138,18 @@ router.delete('/:pid', async(req, res) => {
         
         const data = await productManager.deleteProduct(pid)
 
-        data
-        ? res.status(200).json(data)
-        : res.status(400).json({error:`Not found. No existe un producto con el pid ${pid}`})
+        if(data){
+
+            const products = await productManager.getProducts()
+            io.emit('productsAll', { products })
+
+            return res.status(200).json(data)
+
+        }else{
+
+            return res.status(400).json({error:`Not found. No existe un producto con el pid ${pid}`})
+        }
+         
 
     } catch (error) {
         return res.status(500).json(

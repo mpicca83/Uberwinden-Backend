@@ -139,19 +139,5 @@
       "stock": 5,
       "category": "Camiseta Voley",
       "thumbnails": []
-   },
-   {
-      "id": 12,
-      "title": "Buzo",
-      "description": "Buzo de algodón negro",
-      "code": 7914,
-      "price": 3500,
-      "status": false,
-      "stock": 2,
-      "category": "Buzo",
-      "thumbnails": [
-         "www.google.com.ar",
-         "www.face.com.ar"
-      ]
    }
 ]
