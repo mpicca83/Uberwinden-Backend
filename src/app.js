@@ -6,6 +6,10 @@ import { join } from 'path'
 import __dirname from './utils.js'
 import { engine } from 'express-handlebars'
 import { Server } from 'socket.io'
+import mongoose from 'mongoose'
+import MessageManagerMongoDB from './dao/MessageManagerMongoDB.js'
+
+const messageManager = new MessageManagerMongoDB()
 
 const PORT=8080
 const app=express()
@@ -38,3 +42,51 @@ app.use((error, req, res, next) => {
 const server = app.listen(PORT, ()=> console.log(`Server online en puerto ${PORT}`))
 
 export const io = new Server(server)
+
+// Chat
+
+let users=[]
+ 
+io.on("connection", socket=>{
+    console.log(`Se ha conectado un cliente con id ${socket.id}`)
+
+    socket.on("id", async(user)=>{
+
+        users.push({id:socket.id, user})
+
+        const message = await messageManager.getMessages()
+
+        socket.emit("mensajesPrevios", message)
+        socket.broadcast.emit("nuevoUsuario", user)
+    })
+
+    socket.on("mensaje", async(user, message)=>{
+
+        await messageManager.addMessage({user, message})
+
+        io.emit("nuevoMensaje", user, message)
+    })
+
+    socket.on("disconnect", ()=>{
+        let user = users.find(u => u.id === socket.id)
+        if(user){
+            io.emit("saleUsuario", user.user)
+        }
+    })
+})
+
+// Configuración para la conexión de mongoose con Atlas
+const connectDB = async () => {
+    try {
+        await mongoose.connect(
+            'mongodb+srv://mpicca83:CoderCoder@cluster0.tbrhmtv.mongodb.net/?retryWrites=true&w=majority',
+            {
+                dbName: 'ecommerce'
+            }
+        )
+        console.log('DB Online...')
+    } catch (error) {
+        console.log('Error al conectar a DB.', error.message);
+    }
+}
+connectDB()

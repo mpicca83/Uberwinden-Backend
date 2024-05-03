@@ -1,22 +1,24 @@
-import CartManager from '../dao/CartManager.js'
-import ProductManager from '../dao/ProductManager.js'
+import CartManagerMongoDB from '../dao/CartManagerMongoDB.js'
+import ProductManagerMongoDB from '../dao/ProductManagerMongoDB.js'
+import { isValidObjectId } from "mongoose";
 import { Router } from 'express'
 export const router=Router()
 
-
-const cartManager = new CartManager()
-const productManager = new ProductManager()
-
+const cartManager = new CartManagerMongoDB()
+const productManager = new ProductManagerMongoDB()
 
 router.post('/', async(req, res) => {
 
     try {
 
         const newCart = await cartManager.addCart()
+
+        res.setHeader('Content-Type','application/json')
         return res.status(200).json(newCart)
 
     } catch (error) {
-        
+        console.log(error)
+        res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
                 error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
@@ -28,22 +30,28 @@ router.post('/', async(req, res) => {
 
 router.get('/:cid', async(req, res) => {
 
-    let cid = req.params.cid
-    cid = Number(cid)
+    let {cid} = req.params
 
-    if(isNaN(cid)) {
-        return res.status(400).json({error:'Ingrese un cid numérico.'})
+    if(!isValidObjectId(cid)) {
+        res.setHeader('Content-Type','application/json')
+        return res.status(400).json({error:`El id: ${cid} no es un id válido.`})
     }
 
     try {
 
         const data = await cartManager.getCartById(cid)
 
-        data
-        ? res.status(200).json(data)
-        : res.status(400).json({error:`Not found. No existe un carrito con el cid ${cid}`})
+        if(data){
+            res.setHeader('Content-Type','application/json')
+            return res.status(200).json(data); 
+        }else{
+            res.setHeader('Content-Type','application/json')
+            return res.status(404).json({error:`No existen un carrito con id ${cid}`})
+        }
 
     } catch (error) {
+        console.log(error)
+        res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
                 error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
@@ -55,31 +63,48 @@ router.get('/:cid', async(req, res) => {
 
 router.post('/:cid/product/:pid', async(req, res) => {
 
-    let cid = req.params.cid
-    let pid = req.params.pid
-    cid = Number(cid)
-    pid = Number(pid)
+    const { cid, pid } = req.params
 
-    if(isNaN(cid) || isNaN(pid)) {
-        return res.status(400).json({error:'Ingrese un cid y un pid numérico.'})
+    if(!isValidObjectId(pid)) {
+        res.setHeader('Content-Type','application/json')
+        return res.status(400).json({error:`El id ${pid} no es un id válido.`})
+    }
+
+    if(!isValidObjectId(cid)) {
+        res.setHeader('Content-Type','application/json')
+        return res.status(400).json({error:`El id ${cid} no es un id válido`})
     }
 
     try {
 
-        const cart = await cartManager.getCartById(cid)
-        if(!cart)
-            return res.status(400).json({error:`Not found. No existe un carrito con el cid ${cid}`})
+        let cart = await cartManager.getCartById(cid)
+        if(!cart){
+            res.setHeader('Content-Type','application/json')
+            return res.status(404).json({error:`No existen un carrito con id ${cid}`})
+        }
 
-        const product = await productManager.getProductById(pid)
-        if(!product)
-            return res.status(400).json({error:`Not found. No existe un producto con el pid ${pid}`})
+        let product = await productManager.getProductBy({_id:pid})
+        if(!product){
+            res.setHeader('Content-Type','application/json')
+            return res.status(404).json({error:`No existen un producto con id ${pid}`})
+        }
 
+        const productIndex = cart.products.findIndex(product => product.productId === pid)
+        
+        if(productIndex === -1){
+                cart.products.push({ productId: pid, quantity: 1 })
+        }else{
+            cart.products[productIndex].quantity ++
+        }
 
-        const data = await cartManager.addProductToCart(cid, pid)
-
-        res.status(200).json(data)
+        const data = await cartManager.addProductToCart(cid, cart)
+        
+        res.setHeader('Content-Type','application/json')
+        return res.status(200).json(data)
 
     } catch (error) {
+        console.log(error)
+        res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
                 error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',

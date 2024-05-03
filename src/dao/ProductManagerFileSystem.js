@@ -2,7 +2,7 @@ import fs from 'fs'
 import {join} from 'path'
 import __dirname from '../utils.js'
 
-export default class ProductManager {
+export default class ProductManagerFileSystem {
 
     #path
     
