@@ -7,9 +7,9 @@ export default class ProductManagerMongoDB {
         return await productsModel.create(product)
     }
 
-    async getProducts(){
-
-        return await productsModel.find().lean()
+    async getProducts(limit=10, page=1, sort, query){
+        
+        return await productsModel.paginate(query, {lean: true, limit, page, sort})
     }
 
     async getProductBy(filtro){

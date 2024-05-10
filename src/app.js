@@ -11,7 +11,7 @@ import MessageManagerMongoDB from './dao/MessageManagerMongoDB.js'
 
 const messageManager = new MessageManagerMongoDB()
 
-const PORT=8080
+export const PORT=8080
 const app=express()
 
 app.use(express.json())

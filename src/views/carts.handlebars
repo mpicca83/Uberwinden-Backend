@@ -1,0 +1,42 @@
+
+<div class="encabezado">
+    <h2 class="tituloProductos">Carrito</h2>
+    <a class="carrito" href="/products">Ver Productos</a>
+
+</div>
+
+<input type="text" value="{{cart._id}}" hidden id="carrito2">
+
+<ul class="contenedorArticulo">
+    <li class="liCart">
+        <div class="titulo">PRODUCTO</div>
+        <div class="titulo">CÓDIGO</div>
+        <div class="titulo">STOCK</div>
+        <div class="titulo">CANTIDAD</div>
+        <div class="titulo">PRECIO</div>
+        <div class="titulo"></div>
+    </li>
+
+    {{#each cart.products}}
+        <li class="liCart articulos">
+           
+            <div class="artProducto">{{this.product.title}}</div>
+            <div class="">{{this.product.code}}</div>
+            <div class="">{{this.product.stock}}</div>
+            <div class="cantidad">
+                <button onclick="dec('{{this.product._id}}')" class="btnq btn btn-dark botonEliminar">-</button>
+                <div class="">{{quantity}}</div>
+                <button onclick="inc('{{this.product._id}}')" class="btnq btn btn-dark botonEliminar">+</button>
+            </div>
+            <div class="">${{this.product.price}}</div>
+
+            <div class="card-body text-center">
+                <button onclick="eliminar('{{this.product._id}}')" class="btn btn-danger botonEliminar">Eliminar</button>
+            </div>
+
+        </li>
+        
+    {{/each}}
+</ul>
+
+<script src="/js/carts.js"></script>

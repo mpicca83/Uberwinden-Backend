@@ -1,0 +1,38 @@
+<div class="encabezado">
+    <h2 class="tituloProductos">Listado de Productos</h2>
+    <a class="carrito" href="/carts/{{cart._id}}">Ver Carrito</a>
+
+</div>
+    
+<input type="text" value="{{cart._id}}" hidden id="carrito">
+
+<ul class="contenedor">
+    {{#each products.docs}}
+        <li class="card">
+           
+            <img class="card-imag" src={{thumbnails}} alt={{title}}>
+            <div class="card-body card-text">
+                <h5 class="card-title fw-bold">{{title}}</h5>
+                <p class="card-description">{{description}}</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Precio: ${{price}}</li>
+                <li class="list-group-item">Stock: {{stock}} | Código: {{code}}</li>
+            </ul>
+            <div class="card-body text-center">
+                <button onclick="comprar('{{_id}}')" class="btn btn-primary botonAgregar">Agregar al Carrito</button>
+            </div>
+
+        </li>
+    {{/each}}
+</ul>
+
+<div class="paginacion">
+    <button onclick="primera('{{products.hasPrevPage}}')" class="pagBotton">Primera</button>
+    <button onclick="anterior('{{products.prevPage}},{{products.hasPrevPage}}')" class="pagBotton">Anterior</button>
+    <span class="page">Pag. {{products.page}}</span>
+    <button onclick="siguiente('{{products.nextPage}},{{products.hasNextPage}}')" class="pagBotton">Siguiente</button>
+    <button onclick="ultima('{{products.totalPages}},{{products.hasNextPage}}')" class="pagBotton">Última</button>
+</div>
+
+<script src="/js/products.js"></script>

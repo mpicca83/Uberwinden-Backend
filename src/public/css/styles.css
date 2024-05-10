@@ -1,3 +1,17 @@
+* {
+    margin: 0;  
+    padding: 0;
+    box-sizing: border-box;
+} 
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style-type: none;
+}
+
 h1{
     text-align: center;
     font-family: sans-serif;
@@ -5,31 +19,11 @@ h1{
     font-size: 40px;
 }
 
-ul{
-    list-style: none; 
-    padding: 0; 
-    margin: 0; 
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-li {
-    font-size: 18px;
-    padding: 5px;
-    border-radius: 10px;
-    background-color: aquamarine;
-    width: 250px;
-    margin: auto;
-    gap: 5px;
-    text-align: center;
-}
-
 .ws{
     background-color: rgb(213, 113, 243);
 }
 
-a {
+.realtimeproducts, .chat {
     display: flex;
     padding: 10px 20px;
     background-color: #007bff; 
@@ -45,7 +39,7 @@ a {
     width: 300px;
 }   
 
-a:hover {
+.realtimeproducts:hover, .chat:hover {
     background-color: #0056b3;
 }
 
@@ -81,4 +75,124 @@ a:hover {
     border-radius: 5px;
     display: inline-block;
     margin-bottom: 5px;
+}
+
+.encabezado{
+    background-color: rgb(186, 234, 247);
+    height: 60px;
+    position: fixed;
+    z-index: 1;
+    width: 100%;
+    top: 0;
+    padding: 10px;
+}
+
+.tituloProductos{
+    text-align: center;
+    color: rgb(35, 35, 35);
+}
+
+.carrito{
+    font-size: 20px;
+    position: absolute;
+    color: rgb(116, 120, 241);
+    right: 100px;
+    transform: translate(-50%, -50%);
+    top: 50%;
+}
+
+.contenedor{
+    width: 95%;
+    margin: auto;
+    margin-top: 75px;
+    justify-content: space-evenly;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: auto, 0;
+    gap: 5px;
+}
+.card{
+    width: 320px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgb(254, 250, 247);    
+}
+
+.card-text{
+    height: 100%;
+}
+.card-description{
+    font-size: 14px;
+    text-align: start;
+}
+
+.list-group-item{
+    background-color: rgb(254, 250, 247);
+}
+
+.paginacion{
+    display: flex;
+    gap: 5px;
+    margin: 30px 0 15px 0;
+    justify-content: center;
+}
+
+.pagBotton{
+    background-color: #007bff;
+    width: 80px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+.page{
+    font-size: 20px;
+}
+
+.contenedorArticulo{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    justify-content: space-evenly;
+    width: 70%;
+    margin: auto;
+    margin-top: 80px;
+}
+
+.liCart{
+    display: grid;
+    grid-template-columns: 2fr repeat(5, 1fr);
+    justify-items: center;
+    align-items: center;
+    gap: 10px;
+    margin: 2px 0;
+
+}
+
+.titulo{
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.articulos{
+    background-color: rgb(208, 208, 239);
+    border-radius: 2px;
+    height: 60px;
+}
+
+.artProducto{
+    font-weight: bold;
+}
+
+.cantidad{
+    display: flex;
+    gap: 15px;
+}
+
+.btnq{
+    width: 30px;
+    height: 30px;
+    padding: 0;
 }

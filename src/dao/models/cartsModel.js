@@ -4,13 +4,22 @@ const cartsCollection = 'carts'
 const cartsSchema = new mongoose.Schema(
     {
         products: [{ 
-            productId: {type: String, required: true},
-            quantity: {type: Number, required: true, min: 0}
+            product: {
+                type:mongoose.Types.ObjectId,
+                ref: 'products'
+            },
+            quantity: {type: Number, required: true, min: 1}
         }]
     },
     {
         timestamps: true
     }
 )
+
+cartsSchema.pre('findOne', function(){
+    this.populate({
+        path: 'products.product'
+    }).lean()
+})
 
 export const cartsModel = mongoose.model(cartsCollection, cartsSchema)

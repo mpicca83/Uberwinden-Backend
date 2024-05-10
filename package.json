@@ -17,6 +17,7 @@
     "express-handlebars": "^7.1.2",
     "express-validator": "^7.0.1",
     "mongoose": "^8.3.2",
+    "mongoose-paginate-v2": "^1.8.0",
     "socket.io": "^4.7.5"
   }
 }

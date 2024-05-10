@@ -1,7 +1,7 @@
 
 # Programación Backend
 
-Este es un proyecto para el primer "Desafio Complementario" en el curso de Programación Backend
+Este es un proyecto para la Segunda Pre Entrega del PF en el curso de Programación Backend
 
 
 
