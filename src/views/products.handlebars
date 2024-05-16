@@ -1,10 +1,15 @@
 <div class="encabezado">
-    <h2 class="tituloProductos">Listado de Productos</h2>
-    <a class="carrito" href="/carts/{{cart._id}}">Ver Carrito</a>
-
+    <h2 class="titulo">Listado de Productos</h2>
+    {{>menu}}
 </div>
+<div class="encabezadoF"></div>
+
     
-<input type="text" value="{{cart._id}}" hidden id="carrito">
+<input type="text" value="{{user.cart._id}}" hidden id="carrito">
+
+{{#if user}}
+    <p class="msjBienvenida">Bienvenido {{user.name}}, estas registrado con el email "{{user.email}}" y rol "{{user.rol}}"</p>
+{{/if}}
 
 <ul class="contenedor">
     {{#each products.docs}}

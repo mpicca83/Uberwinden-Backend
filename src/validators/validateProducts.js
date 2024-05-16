@@ -28,7 +28,10 @@ export const validateCreate = [
             return next()
         } catch (error) {
             console.error(error)
-            return res.status(400).json({ errors: error.array() });
+            return res.status(400).json({ 
+                status: 'error',
+                errors: error.array() 
+            })
         }
     }
 ]
@@ -63,7 +66,10 @@ export const validateUpdate = [
         const valido = keys.every(key => keysValidas.includes(key))
 
         if(!valido){
-            return res.status(400).json({error:'Solo es posible modificar los siguientes parametros: title, description, code, price, status, stock, category, thumbnails'})
+            return res.status(400).json({
+                status: 'error',
+                error:'Solo es posible modificar los siguientes parametros: title, description, code, price, status, stock, category, thumbnails'
+            })
         }
 
         next()
@@ -75,7 +81,10 @@ export const validateUpdate = [
             return next()
         } catch (error) {
             console.error(error)
-            return res.status(400).json({ errors: error.array() });
+            return res.status(400).json({ 
+                status: 'error',
+                errors: error.array()
+            })
         }
     }
 ]

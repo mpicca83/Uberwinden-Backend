@@ -1,0 +1,13 @@
+<div class="encabezado">
+    <h2 class="titulo">Registro de Usuario</h2>
+    {{>menu}}
+</div>
+<div class="encabezadoF"></div>
+
+<form class="form" action="/api/sessions/register" method="post">
+    <input class="formInput" type="text" name="name" placeholder="Nombre" required>
+    <input class="formInput" type="email" name="email" placeholder="Email" required>
+    <input class="formInput" type="password" name="password" placeholder="Contraseña" required>
+    <input type="text" name="web" value="web" hidden>
+    <button type="submit" class="btn btn-primary formButton">Registrar</button>
+</form>

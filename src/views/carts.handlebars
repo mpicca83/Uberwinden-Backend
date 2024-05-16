@@ -1,20 +1,20 @@
-
 <div class="encabezado">
-    <h2 class="tituloProductos">Carrito</h2>
-    <a class="carrito" href="/products">Ver Productos</a>
-
+    <h2 class="titulo">Carrito</h2>
+    {{>menu}}
 </div>
+<div class="encabezadoF"></div>
 
-<input type="text" value="{{cart._id}}" hidden id="carrito2">
+
+<input type="text" value="{{user.cart._id}}" hidden id="carrito2">
 
 <ul class="contenedorArticulo">
     <li class="liCart">
-        <div class="titulo">PRODUCTO</div>
-        <div class="titulo">CÓDIGO</div>
-        <div class="titulo">STOCK</div>
-        <div class="titulo">CANTIDAD</div>
-        <div class="titulo">PRECIO</div>
-        <div class="titulo"></div>
+        <div class="tituloCart">PRODUCTO</div>
+        <div class="tituloCart">CÓDIGO</div>
+        <div class="tituloCart">STOCK</div>
+        <div class="tituloCart">CANTIDAD</div>
+        <div class="tituloCart">PRECIO</div>
+        <div class="tituloCart"></div>
     </li>
 
     {{#each cart.products}}

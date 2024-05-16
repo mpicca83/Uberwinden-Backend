@@ -3,6 +3,18 @@ const comprar=async(pid)=>{
     let inputCarrito=document.getElementById("carrito")
     let cid=inputCarrito.value
 
+    if(!cid){
+        Toastify({
+            text: "Debe iniciar sesión para agregar productos al carrito.",
+            duration: 3000,
+            gravity: 'bottom',
+            style: {
+                background: "linear-gradient(to right, #00b09b, #96c93d)",
+            },
+        }).showToast()
+        return
+    }
+
     let respuesta=await fetch(`/api/carts/${cid}/product/${pid}`,{
         method:"post"
     })
@@ -16,7 +28,8 @@ const comprar=async(pid)=>{
                 background: "linear-gradient(to right, #00b09b, #96c93d)",
             },
         }).showToast()
-    }
+    }    
+    
     if(respuesta.status===404){
         
         Toastify({

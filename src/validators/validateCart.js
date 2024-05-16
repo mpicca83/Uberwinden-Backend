@@ -44,7 +44,10 @@ export const validateCart = [
             return next()
         } catch (error) {
             console.error(error)
-            return res.status(400).json({ errors: error.array() });
+            return res.status(400).json({ 
+                status: 'error',
+                errors: error.array() 
+            })
         }
     }
 ]

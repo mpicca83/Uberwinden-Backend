@@ -74,11 +74,4 @@ export default class CartManagerMongoDB {
         )
     }
 
-
-
-
-
-
-
-
 }

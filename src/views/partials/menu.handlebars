@@ -1,0 +1,25 @@
+<ul class="menu" >
+    <li>
+        <a class="liMenu" href="/products">Productos</a>
+    </li>
+
+    {{#if user}}
+        <li>
+            <a class="liMenu" href="/carts/{{user.cart._id}}">Carrito</a>
+        </li>
+        <li>
+            <a class="liMenu" href="/chat">Chat</a>
+        </li>
+        <li>
+            <a class="liMenu" href="/api/sessions/logout?web=true">Cerrar Sesión</a>
+        </li>
+    {{else}}
+        <li>
+            <a class="liMenu" href="/login">Iniciar Sesión</a>
+        </li>
+         <li>
+            <a class="liMenu" href="/register">Registrate</a>
+        </li>
+    {{/if}}
+
+</ul>

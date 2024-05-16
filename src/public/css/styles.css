@@ -12,12 +12,38 @@ ul {
     list-style-type: none;
 }
 
-h1{
+.home{
     text-align: center;
-    font-family: sans-serif;
-    font-weight: 900;
-    font-size: 40px;
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 100px;
+    color: blueviolet;
+    animation: salto 1.5s infinite;
+
 }
+
+@keyframes salto {
+    0% {
+        transform: translate(0);
+    }
+    10% {
+        transform: translate(-5px , 0px);
+    }
+    20% {
+        transform: translate(5px , 0px);
+    }
+    40% {
+        transform: translate(-5px , 0px);
+    }
+    50% {
+        transform: translate(5px , 0px);
+    }
+    100% {
+        transform: translate(0px);
+    }
+}
+
+
 
 .ws{
     background-color: rgb(213, 113, 243);
@@ -87,24 +113,36 @@ h1{
     padding: 10px;
 }
 
-.tituloProductos{
+.encabezadoF{
+    height: 70px;
+}
+
+.titulo{
     text-align: center;
     color: rgb(35, 35, 35);
 }
 
-.carrito{
-    font-size: 20px;
+.liMenu{
+    color: rgb(240, 82, 137);
+}
+
+.menu{
+    display: flex;
     position: absolute;
-    color: rgb(116, 120, 241);
-    right: 100px;
-    transform: translate(-50%, -50%);
+    right: 50px;
+    transform: translate(0%, -50%);
     top: 50%;
+    gap: 20px;
+}
+
+.msjBienvenida{
+    text-align: center;
+    color: rgb(131, 105, 233);
 }
 
 .contenedor{
     width: 95%;
     margin: auto;
-    margin-top: 75px;
     justify-content: space-evenly;
     display: flex;
     flex-direction: row;
@@ -168,10 +206,10 @@ h1{
     align-items: center;
     gap: 10px;
     margin: 2px 0;
-
+    padding: 0 0 0 15px;
 }
 
-.titulo{
+.tituloCart{
     font-size: 15px;
     font-weight: bold;
 }
@@ -195,4 +233,32 @@ h1{
     width: 30px;
     height: 30px;
     padding: 0;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center ;
+    width: 400px;
+    height: 300px;
+    background-color: rgb(204, 186, 234);
+    margin: auto;
+    margin-top: 50px;
+    padding: 50px;
+    gap: 15px;
+    border-radius: 10px;
+}
+
+.formInput{
+    padding: 8px;
+    background-color: rgb(223, 213, 240);
+    border-radius: 10px;
+    width: 100%;
+
+}
+
+.formButton{
+    margin-top: 10px;
+    width: 150px;
 }

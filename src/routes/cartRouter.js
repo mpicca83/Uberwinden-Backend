@@ -3,6 +3,7 @@ import { validateCart } from '../validators/validateCart.js'
 import { validateExistence } from '../validators/validateExistence.js'
 import { validateObjectId } from '../validators/validateObjectId.js'
 import { Router } from 'express'
+import { auth } from '../validators/validateUser.js'
 export const router=Router()
 
 const cartManager = new CartManagerMongoDB()
@@ -32,7 +33,7 @@ router.post('/', async(req, res) => {
     }
 })
 
-router.get('/:cid', [validateObjectId, validateExistence], async(req, res) => {
+router.get('/:cid', [auth, validateObjectId, validateExistence], async(req, res) => {
 
     let {cid} = req.params
 
@@ -59,7 +60,7 @@ router.get('/:cid', [validateObjectId, validateExistence], async(req, res) => {
     }
 })
 
-router.post('/:cid/product/:pid', [validateObjectId, validateExistence], async(req, res) => {
+router.post('/:cid/product/:pid', [auth, validateObjectId, validateExistence], async(req, res) => {
 
     const { cid, pid } = req.params
 
@@ -106,7 +107,7 @@ router.post('/:cid/product/:pid', [validateObjectId, validateExistence], async(r
     }
 })
 
-router.delete('/:cid/products/:pid', [validateObjectId, validateExistence], async(req, res) => {
+router.delete('/:cid/products/:pid', [auth, validateObjectId, validateExistence], async(req, res) => {
 
     const { cid, pid } = req.params
 
@@ -151,7 +152,7 @@ router.delete('/:cid/products/:pid', [validateObjectId, validateExistence], asyn
     }
 })
 
-router.delete('/:cid', [validateObjectId, validateExistence], async(req, res) => {
+router.delete('/:cid', [auth, validateObjectId, validateExistence], async(req, res) => {
 
     const { cid } = req.params
 
@@ -178,7 +179,7 @@ router.delete('/:cid', [validateObjectId, validateExistence], async(req, res) =>
     }
 })
 
-router.put('/:cid/products/:pid', [validateObjectId, validateExistence], async(req, res) => {
+router.put('/:cid/products/:pid', [auth, validateObjectId, validateExistence], async(req, res) => {
 
     const { cid, pid } = req.params
     const { quantity } = req.body
@@ -223,7 +224,7 @@ router.put('/:cid/products/:pid', [validateObjectId, validateExistence], async(r
     }
 })
 
-router.put('/:cid', [validateObjectId, validateExistence, validateCart], async(req, res) => {
+router.put('/:cid', [auth, validateObjectId, validateExistence, validateCart], async(req, res) => {
 
     const { cid } = req.params
     const objetUpdate = req.body
@@ -251,7 +252,7 @@ router.put('/:cid', [validateObjectId, validateExistence, validateCart], async(r
     }
 })
 
-router.put('/incQuantity/:cid/products/:pid', [validateObjectId, validateExistence], async(req, res) => {
+router.put('/incQuantity/:cid/products/:pid', [auth, validateObjectId, validateExistence], async(req, res) => {
 
     const { cid, pid } = req.params
 
@@ -305,7 +306,7 @@ router.put('/incQuantity/:cid/products/:pid', [validateObjectId, validateExisten
     }
 })
 
-router.put('/decQuantity/:cid/products/:pid', [validateObjectId, validateExistence], async(req, res) => {
+router.put('/decQuantity/:cid/products/:pid', [auth, validateObjectId, validateExistence], async(req, res) => {
 
     const { cid, pid } = req.params
 

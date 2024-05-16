@@ -5,6 +5,7 @@ import { validateExistence } from '../validators/validateExistence.js'
 import { io } from '../app.js'
 import { PORT } from '../app.js'
 import { Router } from 'express'
+import { auth } from '../validators/validateUser.js'
 export const router=Router()
 
 const productManager = new ProductManagerMongoDB()
@@ -82,7 +83,7 @@ router.get('/:pid', [validateObjectId, validateExistence], async(req, res) => {
     }
 })
 
-router.post('/', validateCreate, async(req, res) => {
+router.post('/', [auth, validateCreate], async(req, res) => {
 
     const {title, description, code, price, status=true, stock, category, thumbnails=[]} = req.body
 
@@ -129,7 +130,7 @@ router.post('/', validateCreate, async(req, res) => {
     }
 })
 
-router.put('/:pid', [validateUpdate, validateObjectId, validateExistence], async(req, res) => {
+router.put('/:pid', [auth, validateUpdate, validateObjectId, validateExistence], async(req, res) => {
 
     let {pid} = req.params
     const objetUpdate = req.body
@@ -172,7 +173,7 @@ router.put('/:pid', [validateUpdate, validateObjectId, validateExistence], async
     }
 })
 
-router.delete('/:pid', [validateObjectId, validateExistence], async(req, res) => {
+router.delete('/:pid', [auth, validateObjectId, validateExistence], async(req, res) => {
 
     let {pid} = req.params
 
