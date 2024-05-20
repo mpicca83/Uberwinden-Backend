@@ -3,7 +3,7 @@ import { validateCart } from '../validators/validateCart.js'
 import { validateExistence } from '../validators/validateExistence.js'
 import { validateObjectId } from '../validators/validateObjectId.js'
 import { Router } from 'express'
-import { auth } from '../validators/validateUser.js'
+import { auth } from '../middleware/auth.js'
 export const router=Router()
 
 const cartManager = new CartManagerMongoDB()

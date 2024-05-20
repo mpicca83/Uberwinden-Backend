@@ -9,7 +9,9 @@ import { engine } from 'express-handlebars'
 import { Server } from 'socket.io'
 import mongoose from 'mongoose'
 import sessions from "express-session"
-
+import MongoStore from 'connect-mongo'
+import passport from 'passport'
+import { initPassport } from './config/passport.config.js'
 import MessageManagerMongoDB from './dao/MessageManagerMongoDB.js'
 
 const messageManager = new MessageManagerMongoDB()
@@ -21,15 +23,29 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(express.static(join(__dirname, 'public')))
 
+//Configuración de Sessions
 app.use(sessions({
     secret: 'CoderCoder123',
     resave:true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    // Agrego configuración de connect-mongo
+    store: MongoStore.create({
+        ttl: 3600,
+        mongoUrl: 'mongodb+srv://mpicca83:CoderCoder@cluster0.tbrhmtv.mongodb.net/?retryWrites=true&w=majority',
+        dbName: 'ecommerce',
+        collectionName: 'sessions'
+    })
 }))
 
-app.engine('handlebars', engine()) //Configuración de Handlebars
-app.set('view engine', 'handlebars') //Configuración de Handlebars
-app.set('views', join(__dirname, 'views')) //Configuración de Handlebars
+//Configuración de Passport
+initPassport()
+app.use(passport.initialize())
+app.use(passport.session())
+
+//Configuración de Handlebars
+app.engine('handlebars', engine())
+app.set('view engine', 'handlebars') 
+app.set('views', join(__dirname, 'views')) 
 
 app.use('/api/products', productRouter)
 app.use('/api/carts', cartRouter)

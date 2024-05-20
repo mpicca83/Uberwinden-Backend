@@ -2,7 +2,7 @@ import ProductManagerMongoDB from '../dao/ProductManagerMongoDB.js'
 import CartManagerMongoDB from '../dao/CartManagerMongoDB.js'
 import { io } from '../app.js'
 import { Router } from 'express'
-import { auth } from '../validators/validateUser.js'
+import { auth } from '../middleware/auth.js'
 export const router=Router()
 
 const productManager = new ProductManagerMongoDB()

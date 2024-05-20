@@ -5,7 +5,7 @@ import { validateExistence } from '../validators/validateExistence.js'
 import { io } from '../app.js'
 import { PORT } from '../app.js'
 import { Router } from 'express'
-import { auth } from '../validators/validateUser.js'
+import { auth } from '../middleware/auth.js'
 export const router=Router()
 
 const productManager = new ProductManagerMongoDB()
