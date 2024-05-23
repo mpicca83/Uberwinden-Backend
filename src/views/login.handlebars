@@ -4,10 +4,16 @@
 </div>
 <div class="encabezadoF"></div>
 
+<div class="divForm">
+    <form onsubmit="login(event)" id="formLogin" class="form">
+        <input type="email" name="email" placeholder="Email" class="formInput" required>
+        <input type="password" name="password" placeholder="Contraseña" class="formInput" required>
+        <button type="submit" class="btn btn-primary formButton">Iniciar sesión</button>
+    </form>
 
-<form action="/api/sessions/login" method="post" class="form">
-    <input type="email" name="email" placeholder="Email" class="formInput" required>
-    <input type="password" name="password" placeholder="Contraseña" class="formInput" required>
-    <input type="text" name="web" value="web" hidden>
-    <button type="submit" class="btn btn-primary formButton">Iniciar sesión</button>
-</form>
+    <a href="/api/sessions/github" class="github">
+    <img src="/assets/imagess/github.png" alt="Logo Github" class="imgGithub"/>
+    Acceder via Github</a>
+</div>
+
+<script src="js/sessions.js"></script>

@@ -1,5 +1,6 @@
 import passport from "passport"
 import local from "passport-local"
+import github from "passport-github2"
 import { generaHash, validaPassword } from "../utils.js"
 import UserManagerMongoDB from '../dao/UserManagerMongoDB.js'  
 import CartManagerMongoDB from '../dao/CartManagerMongoDB.js'
@@ -32,7 +33,7 @@ export const initPassport = () => {
                     password = generaHash(password)
 
                     const newCart = await cartManager.addCart()
-                    let newUser = await userManager.createUser({name, email: username, password, rol:'usuario', cart: newCart._id})
+                    let newUser = await userManager.createUser({name, email: username, password, cart: newCart._id})
                     return done(null, newUser)
 
                 } catch (error) {
@@ -51,25 +52,56 @@ export const initPassport = () => {
             async (username, password, done) => {
                 try {
 
-                    let user = null
+                    let user = await userManager.getUserBy({email:username})
+                    if(!user){
+                        return done(null, false)
+                    }
 
-                    if(username==='adminCoder@coder.com' && password==='adminCod3r123'){
-                        user = {
-                            name: 'Administrador',
-                            email: 'adminCoder@coder.com',
-                            rol: 'admin'
-                        }
-                    }else{
-                        user = await userManager.getUserBy({email:username})
-                        if(!user){
-                            return done(null, false)
-                        }
-
-                        if(!validaPassword(password, user.password)){
-                            return done(null, false)    
-                        }
+                    if(!validaPassword(password, user.password)){
+                        return done(null, false)    
                     }
                     
+                    delete user.password
+                    return done(null, user)
+
+                } catch (error) {
+                    return done(error)
+                }
+            }
+        )
+    )
+
+    passport.use(
+        'github',
+        new github.Strategy(
+            {
+                clientID: 'Iv23liRZBQ3oz0zZhxdw',
+                clientSecret: '65beaf03105afdbb8f5354b67882a3cd188b209f',
+                callbackURL: 'http://localhost:8080/api/sessions/callbackGithub'
+            },
+            async (tokenAcceso, tockenRefresh, profile, done) => {
+                try {
+
+                    let email = profile._json.email
+                    if(!email){
+                        return done(null, false)
+                    }
+
+                    let name = profile._json.name
+                    if(!name){
+                        return done(null, false)
+                    }
+
+                    let user = await userManager.getUserBy({email})
+                    if(!user){
+                        const newCart = await cartManager.addCart()
+                        user = await userManager.createUser({
+                            name,
+                            email,
+                            cart: newCart._id
+                        })
+                        user = await userManager.getUserBy({email})
+                    }
                     return done(null, user)
 
                 } catch (error) {

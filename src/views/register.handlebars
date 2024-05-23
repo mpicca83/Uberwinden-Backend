@@ -4,10 +4,11 @@
 </div>
 <div class="encabezadoF"></div>
 
-<form class="form" action="/api/sessions/register" method="post">
+<form class="formRegister" onsubmit="register(event)" id="formRegister">
     <input class="formInput" type="text" name="name" placeholder="Nombre" required>
     <input class="formInput" type="email" name="email" placeholder="Email" required>
     <input class="formInput" type="password" name="password" placeholder="Contraseña" required>
-    <input type="text" name="web" value="web" hidden>
     <button type="submit" class="btn btn-primary formButton">Registrar</button>
 </form>
+
+<script src="js/sessions.js"></script>

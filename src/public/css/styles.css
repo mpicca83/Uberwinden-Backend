@@ -235,7 +235,7 @@ ul {
     padding: 0;
 }
 
-.form{
+.divForm{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -250,15 +250,55 @@ ul {
     border-radius: 10px;
 }
 
+.form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center ;
+    width: 100%;
+    gap: 10px;
+}
+
+.formRegister{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center ;
+    gap: 10px;
+    width: 400px;
+    height: 300px;
+    background-color: rgb(204, 186, 234);
+    margin: auto;
+    margin-top: 50px;
+    padding: 50px;
+    border-radius: 10px;
+}
+
 .formInput{
     padding: 8px;
     background-color: rgb(223, 213, 240);
     border-radius: 10px;
     width: 100%;
-
 }
 
 .formButton{
     margin-top: 10px;
     width: 150px;
+}
+
+.github{
+    color: rgb(255, 255, 255);
+    text-shadow: 2px 2px 5px black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.github:hover{
+    color: darkslategrey;
+    text-shadow: 2px 2px 7px rgb(255, 255, 255);
+}
+
+.imgGithub{
+    width: 30px;
 }

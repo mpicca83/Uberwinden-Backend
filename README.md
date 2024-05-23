@@ -1,7 +1,7 @@
 
 # Programación Backend
 
-Este es un proyecto para el desafío "Implementación de Login" en el curso de Programación Backend
+Este es un proyecto para el desafío "Implementación Passport y bcrypt" en el curso de Programación Backend
 
 
 
