@@ -1,12 +1,24 @@
 import passport from "passport"
 import local from "passport-local"
 import github from "passport-github2"
+import passportJWT from "passport-jwt"
+import { SECRET } from "../utils.js"
 import { generaHash, validaPassword } from "../utils.js"
 import UserManagerMongoDB from '../dao/UserManagerMongoDB.js'  
 import CartManagerMongoDB from '../dao/CartManagerMongoDB.js'
 
 const userManager = new UserManagerMongoDB()
 const cartManager = new CartManagerMongoDB()
+
+const findToken=(req)=>{
+    let token=null
+
+    if(req.cookies["cookieToken"]){
+        token=req.cookies["cookieToken"]
+    }
+
+    return token
+}
 
 export const initPassport = () => {
 
@@ -34,6 +46,7 @@ export const initPassport = () => {
 
                     const newCart = await cartManager.addCart()
                     let newUser = await userManager.createUser({name, email: username, password, cart: newCart._id})
+                    delete newUser.password
                     return done(null, newUser)
 
                 } catch (error) {
@@ -111,13 +124,30 @@ export const initPassport = () => {
         )
     )
 
+    passport.use(
+        "jwt",
+        new passportJWT.Strategy(
+            {
+                secretOrKey: SECRET,
+                jwtFromRequest: new passportJWT.ExtractJwt.fromExtractors([findToken])
+            },
+            async(contToken, done)=>{ 
+                try {
+                    return done(null, contToken)
+                } catch (error) {
+                    return done(error)
+                }
+            }
+        )
+    )
 
-    passport.serializeUser((user, done)=>{
-        return done(null, user._id)
-    })
+    //Solo si utilizo sessions
+    // passport.serializeUser((user, done)=>{
+    //     return done(null, user._id)
+    // })
 
-    passport.deserializeUser(async(id, done)=>{
-        let user=await userManager.getUserBy({_id:id})
-        return done(null, user)
-    })
+    // passport.deserializeUser(async(id, done)=>{
+    //     let user=await userManager.getUserBy({_id:id})
+    //     return done(null, user)
+    // })
 }
