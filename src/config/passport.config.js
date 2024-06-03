@@ -30,22 +30,32 @@ export const initPassport = () => {
                 passReqToCallback: true
             },
             async (req, username, password, done) => {
+
                 try {
 
-                    let {name}=req.body
-                    if(!name){
-                        return done(null, false)
+                    let {first_name, last_name, age}=req.body
+                    if(!first_name){
+                        return done(null, false, {message:"Debe ingresar su Nombre."})
                     }
                     
                     const validateEmail = await userManager.getUserBy({email:username})
                     if(validateEmail){
-                        return done(null, false)
+                        return done(null, false, {message:"El email ingresado ya se encuentra registrado."})
                     }
 
                     password = generaHash(password)
 
                     const newCart = await cartManager.addCart()
-                    let newUser = await userManager.createUser({name, email: username, password, cart: newCart._id})
+                    let newUser = await userManager.createUser(
+                        {
+                            first_name,
+                            last_name,
+                            email: username, 
+                            age,
+                            password,
+                            cart: newCart._id
+                        }
+                    )
                     delete newUser.password
                     return done(null, newUser)
 
@@ -67,11 +77,11 @@ export const initPassport = () => {
 
                     let user = await userManager.getUserBy({email:username})
                     if(!user){
-                        return done(null, false)
+                        return done(null, false, {message:"El email ingresado no es válido."})
                     }
 
                     if(!validaPassword(password, user.password)){
-                        return done(null, false)    
+                        return done(null, false, {message:"La contraseña ingresada no es válida."})    
                     }
                     
                     delete user.password
@@ -93,23 +103,24 @@ export const initPassport = () => {
                 callbackURL: 'http://localhost:8080/api/sessions/callbackGithub'
             },
             async (tokenAcceso, tockenRefresh, profile, done) => {
+                
                 try {
 
                     let email = profile._json.email
                     if(!email){
-                        return done(null, false)
+                        return done(null, false, {message:"El login fue rechazado por no tener registrado el email."})
                     }
 
                     let name = profile._json.name
                     if(!name){
-                        return done(null, false)
+                        return done(null, false, {message:"El login fue rechazado por no tener registrado el nombre."})
                     }
 
                     let user = await userManager.getUserBy({email})
                     if(!user){
                         const newCart = await cartManager.addCart()
                         user = await userManager.createUser({
-                            name,
+                            first_name: name,
                             email,
                             cart: newCart._id
                         })
@@ -125,7 +136,7 @@ export const initPassport = () => {
     )
 
     passport.use(
-        "jwt",
+        "current",
         new passportJWT.Strategy(
             {
                 secretOrKey: SECRET,

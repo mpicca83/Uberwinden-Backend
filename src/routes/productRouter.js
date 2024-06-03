@@ -6,12 +6,12 @@ import { io } from '../app.js'
 import { PORT } from '../app.js'
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
-import passport from 'passport'
+import { passportCall } from '../utils.js'
 export const router=Router()
 
 const productManager = new ProductManagerMongoDB()
 
-router.get('/', async(req, res) => {
+router.get('/', auth(['public']), async(req, res) => {
 
     let {limit, page, sort, category, status} = req.query
 
@@ -57,7 +57,7 @@ router.get('/', async(req, res) => {
     }
 })
 
-router.get('/:pid', [validateObjectId, validateExistence], async(req, res) => {
+router.get('/:pid', auth(['public']), validateObjectId, validateExistence, async(req, res) => {
 
     let {pid} = req.params
 
@@ -84,7 +84,7 @@ router.get('/:pid', [validateObjectId, validateExistence], async(req, res) => {
     }
 })
 
-router.post('/', [passport.authenticate('jwt', {session:false}), validateCreate], async(req, res) => {
+router.post('/', passportCall('current'), auth(['admin']), validateCreate, async(req, res) => {
 
     const {title, description, code, price, status=true, stock, category, thumbnails=[]} = req.body
 
@@ -131,7 +131,7 @@ router.post('/', [passport.authenticate('jwt', {session:false}), validateCreate]
     }
 })
 
-router.put('/:pid', [passport.authenticate('jwt', {session:false}), validateUpdate, validateObjectId, validateExistence], async(req, res) => {
+router.put('/:pid', passportCall('current'), auth(['admin']), validateUpdate, validateObjectId, validateExistence, async(req, res) => {
 
     let {pid} = req.params
     const objetUpdate = req.body
@@ -174,7 +174,7 @@ router.put('/:pid', [passport.authenticate('jwt', {session:false}), validateUpda
     }
 })
 
-router.delete('/:pid', [passport.authenticate('jwt', {session:false}), validateObjectId, validateExistence], async(req, res) => {
+router.delete('/:pid', passportCall('current'), auth(['admin']), validateObjectId, validateExistence, async(req, res) => {
 
     let {pid} = req.params
 

@@ -4,13 +4,13 @@ import { validateExistence } from '../validators/validateExistence.js'
 import { validateObjectId } from '../validators/validateObjectId.js'
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
-import passport from 'passport'
+import { passportCall } from '../utils.js'
 
 export const router=Router()
 
 const cartManager = new CartManagerMongoDB()
 
-router.post('/', async(req, res) => {
+router.post('/', auth(['public']), async(req, res) => {
 
     try {
 
@@ -35,7 +35,7 @@ router.post('/', async(req, res) => {
     }
 })
 
-router.get('/:cid', [passport.authenticate('jwt', {session:false}), validateObjectId, validateExistence], async(req, res) => {
+router.get('/:cid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, async(req, res) => {
 
     let {cid} = req.params
 
@@ -62,7 +62,7 @@ router.get('/:cid', [passport.authenticate('jwt', {session:false}), validateObje
     }
 })
 
-router.post('/:cid/product/:pid', [passport.authenticate('jwt', {session:false}), validateObjectId, validateExistence], async(req, res) => {
+router.post('/:cid/product/:pid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, async(req, res) => {
 
     const { cid, pid } = req.params
 
@@ -109,7 +109,7 @@ router.post('/:cid/product/:pid', [passport.authenticate('jwt', {session:false})
     }
 })
 
-router.delete('/:cid/products/:pid', [passport.authenticate('jwt', {session:false}), validateObjectId, validateExistence], async(req, res) => {
+router.delete('/:cid/products/:pid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, async(req, res) => {
 
     const { cid, pid } = req.params
 
@@ -154,7 +154,7 @@ router.delete('/:cid/products/:pid', [passport.authenticate('jwt', {session:fals
     }
 })
 
-router.delete('/:cid', [passport.authenticate('jwt', {session:false}), validateObjectId, validateExistence], async(req, res) => {
+router.delete('/:cid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, async(req, res) => {
 
     const { cid } = req.params
 
@@ -181,7 +181,7 @@ router.delete('/:cid', [passport.authenticate('jwt', {session:false}), validateO
     }
 })
 
-router.put('/:cid/products/:pid', [passport.authenticate('jwt', {session:false}), validateObjectId, validateExistence], async(req, res) => {
+router.put('/:cid/products/:pid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, async(req, res) => {
 
     const { cid, pid } = req.params
     const { quantity } = req.body
@@ -226,7 +226,7 @@ router.put('/:cid/products/:pid', [passport.authenticate('jwt', {session:false})
     }
 })
 
-router.put('/:cid', [passport.authenticate('jwt', {session:false}), validateObjectId, validateExistence, validateCart], async(req, res) => {
+router.put('/:cid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, validateCart, async(req, res) => {
 
     const { cid } = req.params
     const objetUpdate = req.body
@@ -254,7 +254,7 @@ router.put('/:cid', [passport.authenticate('jwt', {session:false}), validateObje
     }
 })
 
-router.put('/incQuantity/:cid/products/:pid', [passport.authenticate('jwt', {session:false}), validateObjectId, validateExistence], async(req, res) => {
+router.put('/incQuantity/:cid/products/:pid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, async(req, res) => {
 
     const { cid, pid } = req.params
 
@@ -308,14 +308,13 @@ router.put('/incQuantity/:cid/products/:pid', [passport.authenticate('jwt', {ses
     }
 })
 
-router.put('/decQuantity/:cid/products/:pid', [passport.authenticate('jwt', {session:false}), validateObjectId, validateExistence], async(req, res) => {
+router.put('/decQuantity/:cid/products/:pid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, async(req, res) => {
 
     const { cid, pid } = req.params
 
     try {
 
         let cart = await cartManager.getCartById(cid)
-c00onsole.log(cart);
         let quantityError = false
         cart.products.forEach(i => {
             if(i.product._id == pid){

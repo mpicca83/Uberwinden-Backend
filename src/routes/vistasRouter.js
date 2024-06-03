@@ -2,24 +2,19 @@ import ProductManagerMongoDB from '../dao/ProductManagerMongoDB.js'
 import CartManagerMongoDB from '../dao/CartManagerMongoDB.js'
 import { io } from '../app.js'
 import { Router } from 'express'
+import { passportCall } from '../utils.js'
 import { auth } from '../middleware/auth.js'
-import passport from 'passport'
-import jwt from 'jsonwebtoken'
-import { SECRET } from '../utils.js'
 export const router=Router()
 
 const productManager = new ProductManagerMongoDB()
 const cartManager = new CartManagerMongoDB()
 
-router.get('/', async(req, res) => {
-    let user = null
-    if(req.cookies["cookieToken"]?.user){
-        user = req.cookies["cookieToken"].user
-    }
+router.get('/', auth(['public']), async(req, res) => {
+    let user = req.user
     res.status(200).render('home', {user: user})
 })
 
-router.get('/realtimeproducts', async(req, res) => {
+router.get('/realtimeproducts', auth(['public']), async(req, res) => {
 
     try {
 
@@ -46,11 +41,12 @@ router.get('/realtimeproducts', async(req, res) => {
     }
 })
 
-router.get('/chat', passport.authenticate('jwt', {session:false}), async(req, res) => {
+router.get('/chat', passportCall("current"), auth(['user', 'admin']), async(req, res) => {
 
     try {
-        
-        res.status(200).render('chat', {user: req.cookies["cookieToken"].user})
+
+        res.setHeader('Content-Type','text/html')
+        return res.status(200).render('chat', {user: req.user})
 
     } catch (error) {
         console.error(error)
@@ -65,7 +61,7 @@ router.get('/chat', passport.authenticate('jwt', {session:false}), async(req, re
     }
 })
 
-router.get('/products', async(req, res) => {
+router.get('/products', auth(['public']),  async(req, res) => {
 
     let {limit, page, sort, category, status} = req.query
 
@@ -78,18 +74,18 @@ router.get('/products', async(req, res) => {
     status !== undefined && (query.status = status)
 
     //let user = req.session.user //Con sessions
-    let token = req.cookies["cookieToken"]
-    let user = jwt.verify(token, SECRET)
+    let user = req.user
 
     try {
 
         const products = await productManager.getProducts(limit, page, sort, query)
         
         res.setHeader('Content-Type','text/html')
-        return res.status(200).render('products', {products, user})
+        return res.status(200).render('products', {products, user: user})
 
     } catch (error) {
         console.error(error)
+        console.error('pase por otro error 2')
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
@@ -101,7 +97,7 @@ router.get('/products', async(req, res) => {
     }
 })
 
-router.get('/carts/:cid', passport.authenticate('jwt', {session:false}), async(req, res) => {
+router.get('/carts/:cid', passportCall("current"), auth(['user', 'admin']), async(req, res) => {
 
     let {cid} = req.params
 
@@ -110,7 +106,7 @@ router.get('/carts/:cid', passport.authenticate('jwt', {session:false}), async(r
         const cart = await cartManager.getCartById({_id:cid})
 
         res.setHeader('Content-Type','text/html')
-        return res.status(200).render('carts', {cart, user: req.cookies["cookieToken"]?.user})
+        return res.status(200).render('carts', {cart, user: req.user})
     } catch (error) {
         console.error(error)
         res.setHeader('Content-Type','application/json')
@@ -124,24 +120,20 @@ router.get('/carts/:cid', passport.authenticate('jwt', {session:false}), async(r
     }
 })
 
-router.get('/register', 
-    (req, res, next)=>{
-        if(req.cookies["cookieToken"]?.user){
-            return res.redirect("/products")
-        }
-    next()
-    },
-    (req, res)=>{
-        res.status(200).render('register')
+router.get('/register', auth(['public']), (req, res)=>{
+
+    if(req.cookies["cookieToken"]){
+        return res.redirect("/products")
+    }else{
+        return res.status(200).render('register')
+    }
 })
 
-router.get('/login', 
-    (req, res, next)=>{
-        if(req.cookies["cookieToken"]?.user){
-            return res.redirect("/products")
-        }
-    next()
-    },
-    (req, res)=>{
-        res.status(200).render('login')
+router.get('/login', auth(['public']), (req, res)=>{
+
+    if(req.cookies["cookieToken"]){
+        return res.redirect("/products")
+    }else{
+        return res.status(200).render('login') 
+    }
 })

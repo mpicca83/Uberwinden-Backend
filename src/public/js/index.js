@@ -15,3 +15,4 @@ socket.on('productAdd', (newProduct) => {
     productList.innerHTML+=`<li class='ws'>${newProduct.title}</li>`
 
 })
+

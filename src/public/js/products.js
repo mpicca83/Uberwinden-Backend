@@ -15,58 +15,93 @@ const comprar=async(pid)=>{
         return
     }
 
-    let respuesta=await fetch(`/api/carts/${cid}/product/${pid}`,{
+    await fetch(`/api/carts/${cid}/product/${pid}`,{
         method:"post"
     })
+    .then (async response => {
 
-    if(respuesta.status===200){
-        Toastify({
-            text: "Producto agregado al carrito...!!!",
-            duration: 3000,
-            gravity: 'bottom',
-            style: {
-                background: "linear-gradient(to right, #00b09b, #96c93d)",
-            },
-        }).showToast()
-    }    
-    
-    if(respuesta.status===404){
+        await verifyToken(response)
+
+        if(response.status===200){
+            Toastify({
+                text: "Producto agregado al carrito...!!!",
+                duration: 3000,
+                gravity: 'bottom',
+                style: {
+                    background: "linear-gradient(to right, #00b09b, #96c93d)",
+                },
+            }).showToast()
+        }    
         
-        Toastify({
-            text: "No es posible incrementar en más del stock.",
-            duration: 3000,
-            gravity: 'bottom',
-            style: {
-                background: "linear-gradient(to right, #00b09b, #96c93d)",
-            },
-        }).showToast()
-    }
+        if(response.status===404){
+            
+            Toastify({
+                text: "No es posible incrementar en más del stock.",
+                duration: 3000,
+                gravity: 'bottom',
+                style: {
+                    background: "linear-gradient(to right, #00b09b, #96c93d)",
+                },
+            }).showToast()
+        }
+    })
 }
 
-const primera = (hasPrevPage)=>{
+const primera = async (hasPrevPage)=>{
     if(hasPrevPage==='true'){
-        window.location.href = `/products?page=1`
+        const response = await fetch(`/products?page=1`, { method: 'GET'});
+        const isValid = await verifyToken(response);
+        isValid && (window.location.href = `/products?page=1`)
     }
 }
 
-const anterior = (dato)=>{
+const anterior = async (dato)=>{
     const prevPage = dato.split(",")
     if(prevPage[1]==='true'){
-        window.location.href = `/products?page=${prevPage[0]}`
+        const response = await fetch(`/products?page=${prevPage[0]}`, { method: 'GET'});
+        const isValid = await verifyToken(response);
+        isValid && (window.location.href = `/products?page=${prevPage[0]}`)
     }
 }
 
-const siguiente = (dato)=>{
+const siguiente = async (dato)=>{
     const nextPage = dato.split(",")
     if(nextPage[1]==='true'){
-        window.location.href = `/products?page=${nextPage[0]}`
+        const response = await fetch(`/products?page=${nextPage[0]}`, { method: 'GET'});
+        const isValid = await verifyToken(response);
+        isValid && (window.location.href = `/products?page=${nextPage[0]}`)
     }
 }
 
-const ultima = (dato)=>{
+const ultima = async (dato)=>{
     const nextPage = dato.split(",")
     if(nextPage[1]==='true'){
-        window.location.href = `/products?page=${nextPage[0]}`
+        const response = await fetch(`/products?page=${nextPage[0]}`, { method: 'GET'});
+        const isValid = await verifyToken(response);
+        isValid && (window.location.href = `/products?page=${nextPage[0]}`)
     }
 }
 
+
+const verifyToken = async (response) => {
+    if (!response.ok) {
+        const resp = await response.json();
+        if (resp.error === 'El token ha expirado.' || resp.error === 'jwt expired') {
+
+            Toastify({
+                text: "La sesión ha expirado...",
+                duration: 3000,
+                gravity: 'bottom',
+                style: {
+                    background: "linear-gradient(to right, #ff0000, #ff4d4d)",
+                },
+            }).showToast()
+    
+            setTimeout(async()=>{
+                window.location.href='/api/sessions/logout?web=true'
+            },3000)   
+            return false
+        }    
+    }
+    return true
+}
