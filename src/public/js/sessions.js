@@ -50,8 +50,11 @@ const register = async(e) => {
     e.preventDefault()
     let [first_name, last_name, email, age, password] = new FormData(document.getElementById("formRegister")).values()
 
+    if (age === '' || age === undefined) {
+        age = 0;
+    }
     let body={first_name, last_name, email, age, password}
-    
+    console.log(body);
     await fetch("/api/sessions/register", {
         method:"post", 
         headers:{

@@ -18,7 +18,7 @@ export const router=Router()
 // })
 
 router.post('/register', validateUserRegistration, passportCall('register'), auth(['public']), async(req, res) => {
-    console.log(req.user)
+    
     res.setHeader('Content-Type','application/json')
     return res.status(201).json({
         status: 'success',

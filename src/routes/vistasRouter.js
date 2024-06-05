@@ -85,7 +85,6 @@ router.get('/products', auth(['public']),  async(req, res) => {
 
     } catch (error) {
         console.error(error)
-        console.error('pase por otro error 2')
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
