@@ -3,7 +3,6 @@ import {dirname} from 'path'
 import bcrypt from 'bcrypt'
 import passport from 'passport'
 
-
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -11,8 +10,6 @@ export default __dirname
 
 export const generaHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 export const validaPassword = (password, passwordHash) => bcrypt.compareSync(password, passwordHash)
-
-export const SECRET = "CoderCoder123"
 
 export const passportCall = (strategy) => {
     return function (req, res, next) {

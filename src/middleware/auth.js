@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken'
-import { SECRET } from '../utils.js'
+import { config } from '../config/config.js'
+
+const { SECRET } = config
 
 export const auth=(roles=[])=>{
 

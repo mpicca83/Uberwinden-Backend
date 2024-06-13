@@ -1,7 +1,7 @@
 import express from 'express'
 import { router as productRouter } from './routes/productRouter.js'
 import { router as cartRouter } from './routes/cartRouter.js'
-import { router as vistasRouter } from './routes/vistasRouter.js'
+import { router as viewsRouter } from './routes/viewsRouter.js'
 import { router as sessionsRouter} from './routes/sessionsRouter.js'
 import { join } from 'path'
 import __dirname from './utils.js'
@@ -9,15 +9,17 @@ import { engine } from 'express-handlebars'
 import { Server } from 'socket.io'
 import mongoose from 'mongoose'
 //import sessions from "express-session"
-import MongoStore from 'connect-mongo'
+//import MongoStore from 'connect-mongo'
 import passport from 'passport'
 import { initPassport } from './config/passport.config.js'
 import MessageManagerMongoDB from './dao/MessageManagerMongoDB.js'
 import cookieParser from 'cookie-parser'
+import { config } from "./config/config.js"
 
 const messageManager = new MessageManagerMongoDB()
 
-export const PORT=8080
+const { PORT, MONGO_URL, DB_NAME } = config
+
 const app=express()
 
 app.use(express.json())
@@ -54,7 +56,7 @@ app.set('views', join(__dirname, 'views'))
 app.use('/api/products', productRouter)
 app.use('/api/carts', cartRouter)
 app.use('/api/sessions', sessionsRouter)
-app.use('/', vistasRouter)
+app.use('/', viewsRouter)
 
 app.use((error, req, res, next) => {
 
@@ -110,9 +112,9 @@ io.on("connection", socket=>{
 const connectDB = async () => {
     try {
         await mongoose.connect(
-            'mongodb+srv://mpicca83:CoderCoder@cluster0.tbrhmtv.mongodb.net/?retryWrites=true&w=majority',
+            MONGO_URL,
             {
-                dbName: 'ecommerce'
+                dbName: DB_NAME
             }
         )
         console.log('DB Online...')

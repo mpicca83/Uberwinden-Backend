@@ -1,7 +1,7 @@
 
 # Programación Backend
 
-Este es un proyecto para el desafío segundo complementario en el curso de Programación Backend
+Este es un proyecto para el desafío "Reestructura de nuestro servidor" en el curso de Programación Backend
 
 
 

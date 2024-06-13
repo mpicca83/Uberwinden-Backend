@@ -2,13 +2,15 @@ import passport from "passport"
 import local from "passport-local"
 import github from "passport-github2"
 import passportJWT from "passport-jwt"
-import { SECRET } from "../utils.js"
 import { generaHash, validaPassword } from "../utils.js"
 import UserManagerMongoDB from '../dao/UserManagerMongoDB.js'  
 import CartManagerMongoDB from '../dao/CartManagerMongoDB.js'
+import { config } from "./config.js"
 
 const userManager = new UserManagerMongoDB()
 const cartManager = new CartManagerMongoDB()
+
+const { SECRET, CLIENT_ID_GITHUB, CLIENT_SECRET_GITHUB, CALLBACK_URL_GITHUB } = config
 
 const findToken=(req)=>{
     let token=null
@@ -98,9 +100,9 @@ export const initPassport = () => {
         'github',
         new github.Strategy(
             {
-                clientID: 'Iv23liRZBQ3oz0zZhxdw',
-                clientSecret: '65beaf03105afdbb8f5354b67882a3cd188b209f',
-                callbackURL: 'http://localhost:8080/api/sessions/callbackGithub'
+                clientID: CLIENT_ID_GITHUB,
+                clientSecret: CLIENT_SECRET_GITHUB,
+                callbackURL: CALLBACK_URL_GITHUB
             },
             async (tokenAcceso, tockenRefresh, profile, done) => {
                 

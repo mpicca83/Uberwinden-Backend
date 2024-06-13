@@ -1,21 +1,13 @@
 import { Router } from 'express'
 import { validateUserLogin, validateUserRegistration } from '../validators/validateUser.js'
 import jwt from 'jsonwebtoken'
-import { SECRET, passportCall} from '../utils.js'
+import { passportCall } from '../utils.js'
 import { auth } from '../middleware/auth.js'
+import { config } from '../config/config.js'
 
 export const router=Router()
 
-// router.get("/error", (req, res)=>{
-//     res.setHeader('Content-Type','application/json')
-//     return res.status(500).json(
-//         {
-//             status: 'error',
-//             error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-//             detalle:`Fallo al autenticar...!!!`
-//         }
-//     )
-// })
+const { SECRET } = config
 
 router.post('/register', validateUserRegistration, passportCall('register'), auth(['public']), async(req, res) => {
     
