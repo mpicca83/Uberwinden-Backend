@@ -1,9 +1,9 @@
 import { productsModel } from './models/productsModel.js'
 
-export default class ProductManagerMongoDB {
+export class ProductManagerMongoDB {
 
     async addProduct(product){
-
+        
         return await productsModel.create(product)
     }
 

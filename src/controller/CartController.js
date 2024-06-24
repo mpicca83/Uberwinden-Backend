@@ -1,6 +1,8 @@
-import CartManagerMongoDB from '../dao/CartManagerMongoDB.js'
-
-const cartManager = new CartManagerMongoDB()
+import { ProductDTO } from '../dto/Product.DTO.js'
+import { email } from '../helpers/email.js'
+import { cartService } from '../repositories/CartService.js'
+import { productService } from '../repositories/ProductService.js'
+import { ticketService } from '../repositories/TicketService.js'
 
 export class CartController{
 
@@ -8,7 +10,7 @@ export class CartController{
 
         try {
     
-            const newCart = await cartManager.addCart()
+            const newCart = await cartService.addCart()
     
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
@@ -23,7 +25,7 @@ export class CartController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -35,7 +37,7 @@ export class CartController{
     
         try {
     
-            const data = await cartManager.getCartById(cid)
+            const data = await cartService.getCartById(cid)
     
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
@@ -50,7 +52,7 @@ export class CartController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -62,7 +64,7 @@ export class CartController{
     
         try {
     
-            let cart = await cartManager.getCartById(cid)
+            let cart = await cartService.getCartById(cid)
     
             let quantityError = false
             cart.products.forEach(i => {
@@ -81,9 +83,9 @@ export class CartController{
                 })
             }
     
-            let data = await cartManager.incQuantity(cid, pid)
-            !data && (data = await cartManager.addProductToCart(cid, { product: pid, quantity: 1 }))
-            
+            let data = await cartService.incQuantity(cid, pid)
+            !data && (data = await cartService.addProductToCart(cid, { product: pid, quantity: 1 }))
+
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
                 status: 'success',
@@ -97,7 +99,7 @@ export class CartController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -109,7 +111,7 @@ export class CartController{
     
         try {
     
-            let cart = await cartManager.getCartById(cid)
+            let cart = await cartService.getCartById(cid)
             
             let productId = null
             cart.products.forEach(i => {
@@ -120,7 +122,7 @@ export class CartController{
     
             if(productId){
     
-                const data = await cartManager.deleteProductToCart(cid, productId)
+                const data = await cartService.deleteProductToCart(cid, productId)
                 
                 res.setHeader('Content-Type','application/json')
                 return res.status(200).json({
@@ -142,7 +144,7 @@ export class CartController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -154,7 +156,7 @@ export class CartController{
     
         try {
             
-            const data = await cartManager.deleteProductsToCart(cid)
+            const data = await cartService.deleteProductsToCart(cid)
                 
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
@@ -169,7 +171,7 @@ export class CartController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -191,7 +193,7 @@ export class CartController{
     
         try {
     
-            const data = await cartManager.updateQuantityToProduct(cid, pid, quantity)
+            const data = await cartService.updateQuantityToProduct(cid, pid, quantity)
     
             if(!data){
                 res.setHeader('Content-Type','application/json')
@@ -214,7 +216,7 @@ export class CartController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -227,7 +229,7 @@ export class CartController{
     
         try {
             
-            const data = await cartManager.updateCart(cid, objetUpdate)
+            const data = await cartService.updateCart(cid, objetUpdate)
                 
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
@@ -242,7 +244,7 @@ export class CartController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -254,12 +256,12 @@ export class CartController{
     
         try {
     
-            let cart = await cartManager.getCartById(cid)
+            let cart = await cartService.getCartById(cid)
     
             let quantityError = false
             cart.products.forEach(i => {
                 if(i.product._id == pid){
-                    if(i.quantity === i.product.stock ){
+                    if(i.quantity >= i.product.stock ){
                         quantityError = true
                     }
                 }
@@ -273,7 +275,7 @@ export class CartController{
                 })
             }
     
-            const data = await cartManager.incQuantity(cid, pid)
+            const data = await cartService.incQuantity(cid, pid)
     
             if(!data){
                 res.setHeader('Content-Type','application/json')
@@ -296,7 +298,7 @@ export class CartController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -308,7 +310,7 @@ export class CartController{
     
         try {
     
-            let cart = await cartManager.getCartById(cid)
+            let cart = await cartService.getCartById(cid)
             let quantityError = false
             cart.products.forEach(i => {
                 if(i.product._id == pid){
@@ -326,7 +328,7 @@ export class CartController{
                 })
             }
     
-            const data = await cartManager.decQuantity(cid, pid)
+            const data = await cartService.decQuantity(cid, pid)
     
             if(!data){
                 res.setHeader('Content-Type','application/json')
@@ -349,10 +351,113 @@ export class CartController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
     }
 
+    static purchaseCart = async (req, res) => {
+
+        const { cid } = req.params
+        const { user } = req
+
+        let productsInStock = []
+        let productsOutOfStock = []
+        let newCart = []
+        let amount = 0
+
+        try {
+
+            let {products} = await cartService.getCartById(cid)
+
+            for(const p of products){
+                if(p.product.stock >= p.quantity){
+                    let newStock = p.product.stock - p.quantity
+
+                        // Resta del stock las cantidades compradas en cada producto
+                    await productService.updateProduct(p.product._id, {stock: newStock})
+                    productsInStock.push(p)
+
+                    amount += p.quantity * p.product.price
+                    
+                }else{
+                    productsOutOfStock.push(p)
+                    newCart.push({product:p.product._id, quantity:p.quantity})
+                }
+            }
+
+            productsInStock=productsInStock.map(product=>new ProductDTO(product))
+            productsOutOfStock=productsOutOfStock.map(product=>new ProductDTO(product))
+
+                //Genera ticket
+            let newTicket = null
+            if(productsInStock.length>0){
+                let code = user.cart._id+'-'+Math.random().toString(36).substring(2, 15).toUpperCase()
+                let purchaser = user.email
+                newTicket = await ticketService.createTicket({code, amount, purchaser})
+            }
+
+                // Actualiza el carrito con los productos que no se pudieron comprar.
+            await cartService.updateCart(cid, {products: newCart}) 
+
+                //genera cuerpo del email
+            const htmlConten = () => {
+                let html = `
+                        <p><b>Tickets de Compra:</b><p>
+                        <p>Operación: ${newTicket.code}</p>
+                        <p>Fecha y hora: ${newTicket.purchase_datetime}</p>
+                        <p>Total de la compra: $${newTicket.amount}</p>
+                        <p>Email: ${newTicket.purchaser}</p>
+                        </br>
+                        <p><strong>Productos comprados:</strong></p>
+                        <ul>${productsInStock.map(p => `<li>${p.title} - Código: ${p.code} - Precio: $${p.price} - Cantidad: ${p.quantity} - Subtotal: $${p.subTotal}</li>`).join('')}</ul>`
+                return html
+            }
+
+            res.setHeader('Content-Type','application/json')
+
+            if(productsInStock.length>0 && productsOutOfStock.length===0){
+
+                email(user.email, 'Überwinden - Ticket de compra', htmlConten())
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'La compra se realizó con éxito.',
+                    ticket: newTicket,
+                    confirmed: productsInStock
+                })
+            }
+
+            if(productsInStock.length>0 && productsOutOfStock.length>0){
+
+                email(user.email, 'Überwinden - Ticket de compra', htmlConten())
+                return res.status(200).json({
+                    status: 'partial_success',
+                    message: 'La compra de algunos productos no se pudo concretar por falta de stock.',
+                    ticket: newTicket,
+                    confirmed: productsInStock,
+                    rejected: productsOutOfStock
+                })
+            }
+
+            if(productsInStock.length===0 && productsOutOfStock.length>0){
+                return res.status(200).json({
+                    status: 'fail',
+                    message: 'La compra no se pudo concretar por falta de stock.',
+                    rejected: productsOutOfStock
+                })
+            }
+
+        } catch (error) {
+            console.error(error)
+            res.setHeader('Content-Type','application/json')
+            return res.status(500).json(
+                {
+                    status: 'error',
+                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+                    detail:`${error.message}`
+                }
+            )
+        }
+    }
 }

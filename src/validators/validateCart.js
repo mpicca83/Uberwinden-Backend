@@ -1,7 +1,5 @@
 import { check, validationResult } from 'express-validator'
-import ProductManagerMongoDB from '../dao/ProductManagerMongoDB.js'
-
-const productManager = new ProductManagerMongoDB()
+import { productService } from '../repositories/ProductService.js'
 
 export const validateCart = [
     check('products')
@@ -19,7 +17,7 @@ export const validateCart = [
                 throw new Error('Los valores del campo "product" deben ser únicos.')
             } 
             for (const item of req.body.products) {
-                let valido = await productManager.getProductBy({ _id: item.product })
+                let valido = await productService.getProductBy({ _id: item.product })
                 if (!valido) {
                     throw new Error(`El elemento product:${item.product} no corresponde a un producto existente.`)
                 }

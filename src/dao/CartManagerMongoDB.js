@@ -1,6 +1,6 @@
 import { cartsModel } from './models/cartsModel.js'
 
-export default class CartManagerMongoDB {
+export class CartManagerMongoDB {
 
     async addCart(){
 
@@ -62,8 +62,8 @@ export default class CartManagerMongoDB {
             { _id: cid, 'products.product': pid },
             { $set: { 'products.$.quantity': quantity } },
             { new: true }
-        );
-    }
+        )
+    } 
 
     async updateCart(cid, objetUpdate){
 

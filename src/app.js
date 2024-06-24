@@ -12,11 +12,10 @@ import mongoose from 'mongoose'
 //import MongoStore from 'connect-mongo'
 import passport from 'passport'
 import { initPassport } from './config/passport.config.js'
-import MessageManagerMongoDB from './dao/MessageManagerMongoDB.js'
 import cookieParser from 'cookie-parser'
 import { config } from "./config/config.js"
-
-const messageManager = new MessageManagerMongoDB()
+import { messageService } from './repositories/MessageService.js'
+import cors from 'cors'
 
 const { PORT, MONGO_URL, DB_NAME } = config
 
@@ -25,6 +24,9 @@ const app=express()
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(express.static(join(__dirname, 'public')))
+
+    //Cors - Permite la solicitud cruzada entre servidores
+app.use(cors()) 
 
     //Cookie-Parser
 app.use(cookieParser())
@@ -65,7 +67,7 @@ app.use((error, req, res, next) => {
             {
                 status: 'error',
                 error:'Error inesperado en el servidor.',
-                detalle: `${error.message}`
+                detail: `${error.message}`
             }
         )
     }
@@ -87,7 +89,7 @@ io.on("connection", socket=>{
 
         users.push({id:socket.id, user})
 
-        const message = await messageManager.getMessages()
+        const message = await messageService.getMessages()
 
         socket.emit("mensajesPrevios", message)
         socket.broadcast.emit("nuevoUsuario", user)
@@ -95,7 +97,7 @@ io.on("connection", socket=>{
 
     socket.on("mensaje", async(user, message)=>{
 
-        await messageManager.addMessage({user, message})
+        await messageService.addMessage({user, message})
 
         io.emit("nuevoMensaje", user, message)
     })

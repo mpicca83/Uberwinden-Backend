@@ -1,9 +1,6 @@
 import { validationResult } from 'express-validator'
-import CartManagerMongoDB from '../dao/CartManagerMongoDB.js'
-import ProductManagerMongoDB from '../dao/ProductManagerMongoDB.js'
-
-const cartManager = new CartManagerMongoDB()
-const productManager = new ProductManagerMongoDB()
+import { cartService } from '../repositories/CartService.js'
+import { productService } from '../repositories/ProductService.js'
 
 export const validateExistence = async (req, res, next) => {
 
@@ -13,7 +10,7 @@ export const validateExistence = async (req, res, next) => {
 
         // Verificar si el carrito existe
         if(cid){
-            const cart = await cartManager.getCartById(cid)
+            const cart = await cartService.getCartById(cid)
             if (!cart) {
                 return res.status(404).json({
                     status: 'error',
@@ -23,7 +20,7 @@ export const validateExistence = async (req, res, next) => {
         }
         // Verificar si el producto existe
         if(pid){
-            const product = await productManager.getProductBy({ _id: pid })
+            const product = await productService.getProductBy({ _id: pid })
             if (!product) {
                 return res.status(404).json({
                     status: 'error',

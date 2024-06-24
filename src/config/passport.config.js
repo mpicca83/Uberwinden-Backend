@@ -3,12 +3,9 @@ import local from "passport-local"
 import github from "passport-github2"
 import passportJWT from "passport-jwt"
 import { generaHash, validaPassword } from "../utils.js"
-import UserManagerMongoDB from '../dao/UserManagerMongoDB.js'  
-import CartManagerMongoDB from '../dao/CartManagerMongoDB.js'
 import { config } from "./config.js"
-
-const userManager = new UserManagerMongoDB()
-const cartManager = new CartManagerMongoDB()
+import { userService } from "../repositories/UserService.js"
+import { cartService } from "../repositories/CartService.js"
 
 const { SECRET, CLIENT_ID_GITHUB, CLIENT_SECRET_GITHUB, CALLBACK_URL_GITHUB } = config
 
@@ -40,15 +37,15 @@ export const initPassport = () => {
                         return done(null, false, {message:"Debe ingresar su Nombre."})
                     }
                     
-                    const validateEmail = await userManager.getUserBy({email:username})
+                    const validateEmail = await userService.getUserBy({email:username})
                     if(validateEmail){
                         return done(null, false, {message:"El email ingresado ya se encuentra registrado."})
                     }
 
                     password = generaHash(password)
 
-                    const newCart = await cartManager.addCart()
-                    let newUser = await userManager.createUser(
+                    const newCart = await cartService.addCart()
+                    let newUser = await userService.createUser(
                         {
                             first_name,
                             last_name,
@@ -77,7 +74,7 @@ export const initPassport = () => {
             async (username, password, done) => {
                 try {
 
-                    let user = await userManager.getUserBy({email:username})
+                    let user = await userService.getUserBy({email:username})
                     if(!user){
                         return done(null, false, {message:"El email ingresado no es válido."})
                     }
@@ -118,15 +115,15 @@ export const initPassport = () => {
                         return done(null, false, {message:"El login fue rechazado por no tener registrado el nombre."})
                     }
 
-                    let user = await userManager.getUserBy({email})
+                    let user = await userService.getUserBy({email})
                     if(!user){
-                        const newCart = await cartManager.addCart()
-                        user = await userManager.createUser({
+                        const newCart = await cartService.addCart()
+                        user = await userService.createUser({
                             first_name: name,
                             email,
                             cart: newCart._id
                         })
-                        user = await userManager.getUserBy({email})
+                        user = await userService.getUserBy({email})
                     }
                     return done(null, user)
 
@@ -160,7 +157,7 @@ export const initPassport = () => {
     // })
 
     // passport.deserializeUser(async(id, done)=>{
-    //     let user=await userManager.getUserBy({_id:id})
+    //     let user=await userService.getUserBy({_id:id})
     //     return done(null, user)
     // })
 }

@@ -1,8 +1,7 @@
-import ProductManagerMongoDB from '../dao/ProductManagerMongoDB.js'
 import { io } from '../app.js'
 import { config } from '../config/config.js'
+import { productService } from '../repositories/ProductService.js'
 
-const productManager = new ProductManagerMongoDB()
 const { PORT } = config
 
 export class ProcuctController{
@@ -21,7 +20,7 @@ export class ProcuctController{
     
         try {
     
-            let datos = await productManager.getProducts(limit, page, sort, query)
+            let datos = await productService.getProducts(limit, page, sort, query)
           
             let prevLink = datos.hasPrevPage ? `/localhost:${PORT}/api/products?page=${datos.prevPage}` : null
             let nextLink = datos.hasNextPage ? `/localhost:${PORT}/api/products?page=${datos.nextPage}` : null
@@ -47,7 +46,7 @@ export class ProcuctController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -59,7 +58,7 @@ export class ProcuctController{
     
         try {
     
-            const data = await productManager.getProductBy({_id:pid})
+            const data = await productService.getProductBy({_id:pid})
     
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
@@ -74,7 +73,7 @@ export class ProcuctController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -97,7 +96,7 @@ export class ProcuctController{
     
         try {
     
-            const existe = await productManager.getProductBy({code})
+            const existe = await productService.getProductBy({code})
             if(existe){
                 res.setHeader('Content-Type','application/json');
                 return res.status(400).json({
@@ -106,7 +105,7 @@ export class ProcuctController{
                 })
             }
     
-            const newProduct = await productManager.addProduct(product)
+            const newProduct = await productService.addProduct(product)
             io.emit('productAdd',  newProduct )
             
             res.setHeader('Content-Type','application/json')
@@ -121,7 +120,7 @@ export class ProcuctController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -136,7 +135,7 @@ export class ProcuctController{
     
             if(objetUpdate.code){
     
-                const existe = await productManager.getProductBy({code:objetUpdate.code})
+                const existe = await productService.getProductBy({code:objetUpdate.code})
                 
                 if(existe){
                     res.setHeader('Content-Type','application/json')
@@ -147,9 +146,9 @@ export class ProcuctController{
                 }
             }
     
-            const update = await productManager.updateProduct(pid, objetUpdate)
+            const update = await productService.updateProduct(pid, objetUpdate)
     
-            const products = await productManager.getProducts()
+            const products = await productService.getProducts()
             io.emit('productsAll', { products })
     
             res.setHeader('Content-Type','application/json')
@@ -164,7 +163,7 @@ export class ProcuctController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }
@@ -176,9 +175,9 @@ export class ProcuctController{
     
         try {
             
-            const data = await productManager.deleteProduct(pid)
+            const data = await productService.deleteProduct(pid)
     
-            const products = await productManager.getProducts()
+            const products = await productService.getProducts()
             io.emit('productsAll', { products })
             
             res.setHeader('Content-Type','application/json')
@@ -193,7 +192,7 @@ export class ProcuctController{
                 {
                     status: 'error',
                     error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detalle:`${error.message}`
+                    detail:`${error.message}`
                 }
             )
         }

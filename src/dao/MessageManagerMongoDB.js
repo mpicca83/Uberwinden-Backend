@@ -1,6 +1,6 @@
 import { messagesModel } from "./models/messagesModel.js"
 
-export default class MessageManagerMongoDB {
+export class MessageManagerMongoDB {
 
      async getMessages(){
 

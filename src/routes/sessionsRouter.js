@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { passportCall } from '../utils.js'
 import { auth } from '../middleware/auth.js'
 import { config } from '../config/config.js'
+import { UserDTO } from '../dto/UserDTO.js'
 
 export const router=Router()
 
@@ -52,7 +53,7 @@ router.get('/logout', async(req, res) => {
     //             {
     //                 status: 'error',
     //                 error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-    //                 detalle:`${error.message}`
+    //                 detail:`${error.message}`
     //             }
     //         )
             
@@ -87,6 +88,6 @@ router.get('/current', passportCall('current'), auth(['user', 'admin']), (req, r
     return res.status(200).json({
         status: 'success',
         payload: 'Datos del usuario registrado.',
-        user: req.user
+        user: new UserDTO(req.user)
     })
 })

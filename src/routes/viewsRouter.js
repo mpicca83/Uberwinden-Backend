@@ -1,13 +1,10 @@
-import ProductManagerMongoDB from '../dao/ProductManagerMongoDB.js'
-import CartManagerMongoDB from '../dao/CartManagerMongoDB.js'
 import { io } from '../app.js'
 import { Router } from 'express'
 import { passportCall } from '../utils.js'
 import { auth } from '../middleware/auth.js'
+import { productService } from '../repositories/ProductService.js'
+import { cartService } from '../repositories/CartService.js'
 export const router=Router()
-
-const productManager = new ProductManagerMongoDB()
-const cartManager = new CartManagerMongoDB()
 
 router.get('/', auth(['public']), async(req, res) => {
     let user = req.user
@@ -18,7 +15,7 @@ router.get('/realtimeproducts', auth(['public']), async(req, res) => {
 
     try {
 
-        const products = await productManager.getProducts()
+        const products = await productService.getProducts()
 
         io.on("connection", socket=> {
             console.log(`Se ha conectado un cliente con id ${socket.id}`)
@@ -35,13 +32,13 @@ router.get('/realtimeproducts', auth(['public']), async(req, res) => {
             {
                 status: 'error',
                 error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                detalle:`${error.message}`
+                detail:`${error.message}`
             }
         )
     }
 })
 
-router.get('/chat', passportCall("current"), auth(['user', 'admin']), async(req, res) => {
+router.get('/chat', passportCall("current"), auth(['user']), async(req, res) => {
 
     try {
 
@@ -55,7 +52,7 @@ router.get('/chat', passportCall("current"), auth(['user', 'admin']), async(req,
             {
                 status: 'error',
                 error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                detalle:`${error.message}`
+                detail:`${error.message}`
             }
         )
     }
@@ -78,7 +75,7 @@ router.get('/products', auth(['public']),  async(req, res) => {
 
     try {
 
-        const products = await productManager.getProducts(limit, page, sort, query)
+        const products = await productService.getProducts(limit, page, sort, query)
         
         res.setHeader('Content-Type','text/html')
         return res.status(200).render('products', {products, user: user})
@@ -90,7 +87,7 @@ router.get('/products', auth(['public']),  async(req, res) => {
             {
                 status: 'error',
                 error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                detalle:`${error.message}`
+                detail:`${error.message}`
             }
         )
     }
@@ -102,7 +99,7 @@ router.get('/carts/:cid', passportCall("current"), auth(['user', 'admin']), asyn
 
     try {
 
-        const cart = await cartManager.getCartById({_id:cid})
+        const cart = await cartService.getCartById({_id:cid})
 
         res.setHeader('Content-Type','text/html')
         return res.status(200).render('carts', {cart, user: req.user})
@@ -113,7 +110,7 @@ router.get('/carts/:cid', passportCall("current"), auth(['user', 'admin']), asyn
             {
                 status: 'error',
                 error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                detalle:`${error.message}`
+                detail:`${error.message}`
             }
         )
     }

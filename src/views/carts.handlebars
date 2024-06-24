@@ -17,6 +17,10 @@
         <div class="tituloCart"></div>
     </li>
 
+    {{#unless cart.products}}
+        <p class="vacio"><i>Esto es un desierto...</i></p>
+    {{/unless }}
+
     {{#each cart.products}}
         <li class="liCart articulos">
            
@@ -38,5 +42,8 @@
         
     {{/each}}
 </ul>
+
+
+<button onclick="comprar()" class="btn btn-primary botonComprar">Comprar</button>
 
 <script src="/js/carts.js"></script>

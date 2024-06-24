@@ -12,16 +12,18 @@ router.post('/', auth(['public']), CartController.addCart)
 
 router.get('/:cid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, CartController.getCart)
 
-router.post('/:cid/product/:pid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, CartController.addProductToCart)
+router.post('/:cid/product/:pid', passportCall('current'), auth(['user']), validateObjectId, validateExistence, CartController.addProductToCart)
 
-router.delete('/:cid/products/:pid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, CartController.deleteProductToCart)
+router.delete('/:cid/products/:pid', passportCall('current'), auth(['user']), validateObjectId, validateExistence, CartController.deleteProductToCart)
 
-router.delete('/:cid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, CartController.deleteProductsToCart)
+router.delete('/:cid', passportCall('current'), auth(['user']), validateObjectId, validateExistence, CartController.deleteProductsToCart)
 
-router.put('/:cid/products/:pid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, CartController.updateQuantityToProduct)
+router.put('/:cid/products/:pid', passportCall('current'), auth(['user']), validateObjectId, validateExistence, CartController.updateQuantityToProduct)
 
-router.put('/:cid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, validateCart, CartController.updateCart)
+router.put('/:cid', passportCall('current'), auth(['user']), validateObjectId, validateExistence, validateCart, CartController.updateCart)
 
-router.put('/incQuantity/:cid/products/:pid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, CartController.updateIncQuantityToProduct)
+router.put('/incQuantity/:cid/products/:pid', passportCall('current'), auth(['user']), validateObjectId, validateExistence, CartController.updateIncQuantityToProduct)
 
-router.put('/decQuantity/:cid/products/:pid', passportCall('current'), auth(['user', 'admin']), validateObjectId, validateExistence, CartController.updateDecQuantityToProduct)
+router.put('/decQuantity/:cid/products/:pid', passportCall('current'), auth(['user']), validateObjectId, validateExistence, CartController.updateDecQuantityToProduct)
+
+router.post('/:cid/purchase', passportCall('current'), auth(['user']), validateObjectId, validateExistence, CartController.purchaseCart)
