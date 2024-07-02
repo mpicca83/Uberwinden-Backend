@@ -30,7 +30,6 @@ export const validateExistence = async (req, res, next) => {
         }
 
     } catch (error) {
-        console.error(error)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {

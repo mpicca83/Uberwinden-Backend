@@ -27,7 +27,6 @@ export const validateCreate = [
             validationResult(req).throw()
             return next()
         } catch (error) {
-            console.error(error)
             return res.status(400).json({ 
                 status: 'error',
                 errors: error.array() 
@@ -80,7 +79,6 @@ export const validateUpdate = [
             validationResult(req).throw()
             return next()
         } catch (error) {
-            console.error(error)
             return res.status(400).json({ 
                 status: 'error',
                 errors: error.array()

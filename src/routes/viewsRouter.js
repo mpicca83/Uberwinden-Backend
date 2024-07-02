@@ -4,6 +4,7 @@ import { passportCall } from '../utils.js'
 import { auth } from '../middleware/auth.js'
 import { productService } from '../repositories/ProductService.js'
 import { cartService } from '../repositories/CartService.js'
+import { MockingController } from '../controller/MockingController.js'
 export const router=Router()
 
 router.get('/', auth(['public']), async(req, res) => {
@@ -26,7 +27,7 @@ router.get('/realtimeproducts', auth(['public']), async(req, res) => {
         return res.status(200).render('realTimeProducts', { products })
 
     } catch (error) {
-        console.error(error)
+        console.error(error.message)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
@@ -46,7 +47,7 @@ router.get('/chat', passportCall("current"), auth(['user']), async(req, res) => 
         return res.status(200).render('chat', {user: req.user})
 
     } catch (error) {
-        console.error(error)
+        console.error(error.message)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
@@ -81,7 +82,7 @@ router.get('/products', auth(['public']),  async(req, res) => {
         return res.status(200).render('products', {products, user: user})
 
     } catch (error) {
-        console.error(error)
+        console.error(error.message)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
@@ -104,7 +105,7 @@ router.get('/carts/:cid', passportCall("current"), auth(['user', 'admin']), asyn
         res.setHeader('Content-Type','text/html')
         return res.status(200).render('carts', {cart, user: req.user})
     } catch (error) {
-        console.error(error)
+        console.error(error.message)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
@@ -132,4 +133,28 @@ router.get('/login', auth(['public']), (req, res)=>{
     }else{
         return res.status(200).render('login') 
     }
+})
+
+router.get('/mockingproducts', auth(['public']),  async(req, res) => {
+
+    try {
+
+        const products = MockingController.generateMockingProducts()
+        
+        res.setHeader('Content-Type','text/html')
+        return res.status(200).render('mockingProducts', {products, user: req.user})
+
+    } catch (error) {
+        console.error(error.message)
+        res.setHeader('Content-Type','application/json')
+        return res.status(500).json(
+            {
+                status: 'error',
+                error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+                detail:`${error.message}`
+            }
+        )
+    }
+
+
 })

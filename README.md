@@ -1,7 +1,7 @@
 
 # Programación Backend
 
-Este es un proyecto para la tercer entrega del Proyecto Final en el curso de Programación Backend
+Este es un proyecto para la entrega del desafío "Mocking y manejo de errores" en el curso de Programación Backend
 
 
 

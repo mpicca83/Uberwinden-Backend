@@ -1,0 +1,35 @@
+<div class="encabezado">
+    <h2 class="titulo">Listado de Productos Simulados</h2>
+    {{>menu}}
+</div>
+<div class="encabezadoF"></div>
+
+    
+<input type="text" value="{{user.cart._id}}" hidden id="carrito">
+
+{{#if user}}
+    <p class="msjBienvenida">Bienvenido {{user.first_name}}, estas registrado con el email "{{user.email}}" y rol "{{user.rol}}"</p>
+{{/if}}
+
+<ul class="contenedor">
+    {{#each products}}
+        <li class="card">
+           
+            <img class="card-imag" src={{thumbnails}} alt={{title}}>
+            <div class="card-body card-text">
+                <h5 class="card-title fw-bold">{{title}}</h5>
+                <p class="card-description">{{description}}</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Precio: ${{price}}</li>
+                <li class="list-group-item">Stock: {{stock}} | Código: {{code}}</li>
+            </ul>
+            <div class="card-body text-center">
+                <button onclick="comprar('{{_id}}')" class="btn btn-primary botonAgregar">Agregar al Carrito</button>
+            </div>
+
+        </li>
+    {{/each}}
+</ul>
+
+<script src="/js/products.js"></script>
