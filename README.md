@@ -1,7 +1,7 @@
 
 # Programación Backend
 
-Este es un proyecto para la entrega del desafío "Mocking y manejo de errores" en el curso de Programación Backend
+Este es un proyecto para la entrega del desafío "Implementación de logger" en el curso de Programación Backend
 
 
 **Para iniciar en "Modo Development"**
@@ -15,6 +15,14 @@ Este es un proyecto para la entrega del desafío "Mocking y manejo de errores" e
 ``` npm run dev -- -m prod ```
 <br>
 ``` npm start -- -m prod ```
+
+**Para realizar el test de los log debe acceder a la siguientes rutas:**
+
+En modo dev:
+``` localhost:8080/api/loggerTest ```
+
+En modo prod:
+``` localhost:3001/api/loggerTest ```
 
 
 
