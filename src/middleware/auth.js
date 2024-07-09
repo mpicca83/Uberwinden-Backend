@@ -47,7 +47,7 @@ export const auth=(roles=[])=>{
             return next()
                 
         }catch (error) {
-            console.log(error);
+            req.logger.error(error);
             return res.status(500).json({ error: 'Error interno del servidor' });
         }
     }

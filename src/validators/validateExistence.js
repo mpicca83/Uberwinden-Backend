@@ -12,6 +12,7 @@ export const validateExistence = async (req, res, next) => {
         if(cid){
             const cart = await cartService.getCartById(cid)
             if (!cart) {
+                
                 return res.status(404).json({
                     status: 'error',
                     error: `No existe un carrito con id ${cid}`
@@ -30,6 +31,7 @@ export const validateExistence = async (req, res, next) => {
         }
 
     } catch (error) {
+        req.logger.error(error.message)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {

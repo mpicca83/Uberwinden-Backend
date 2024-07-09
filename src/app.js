@@ -4,6 +4,7 @@ import { router as cartRouter } from './routes/cartRouter.js'
 import { router as viewsRouter } from './routes/viewsRouter.js'
 import { router as sessionsRouter} from './routes/sessionsRouter.js'
 import { router as mockingRouter } from './routes/mockingRouter.js'
+import { router as loggerTestRouter } from './routes/loggerTestRouter.js'
 import { join } from 'path'
 import __dirname from './utils.js'
 import { engine } from 'express-handlebars'
@@ -17,12 +18,14 @@ import cookieParser from 'cookie-parser'
 import { config } from "./config/config.js"
 import { messageService } from './repositories/MessageService.js'
 import cors from 'cors'
+import { logger, middLogger } from './middleware/logger.js'
 
 const { PORT, MONGO_URL, DB_NAME } = config
 
 const app=express()
 
 app.use(express.json())
+app.use(middLogger)
 app.use(express.urlencoded({extended:true}))
 app.use(express.static(join(__dirname, 'public')))
 
@@ -60,11 +63,13 @@ app.use('/api/products', productRouter)
 app.use('/api/carts', cartRouter)
 app.use('/api/sessions', sessionsRouter)
 app.use('/api/mocking', mockingRouter)
+app.use('/api/loggerTest', loggerTestRouter)
 app.use('/', viewsRouter)
 
 app.use((error, req, res, next) => {
 
     if(error){
+        req.logger.error(error.message)
         return res.status(500).json(
             {
                 status: 'error',
@@ -76,7 +81,7 @@ app.use((error, req, res, next) => {
     next()
 })
 
-const server = app.listen(PORT, ()=> console.log(`Server online en puerto ${PORT}`))
+const server = app.listen(PORT, ()=> logger.info(`Server online en puerto ${PORT}`))
 
 export const io = new Server(server)
 
@@ -85,7 +90,7 @@ export const io = new Server(server)
 let users=[]
  
 io.on("connection", socket=>{
-    console.log(`Se ha conectado un cliente con id ${socket.id}`)
+    logger.info(`Se ha conectado un cliente con id ${socket.id}`)
 
     socket.on("id", async(user)=>{
 
@@ -121,9 +126,9 @@ const connectDB = async () => {
                 dbName: DB_NAME
             }
         )
-        console.log('DB Online...')
+        logger.info('DB Online...')
     } catch (error) {
-        console.log('Error al conectar a DB.', error.message);
+        logger.error('Error al conectar a DB.', error.message);
     }
 }
 connectDB()

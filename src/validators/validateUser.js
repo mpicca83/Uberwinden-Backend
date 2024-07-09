@@ -20,6 +20,7 @@ export const validateUserRegistration = [
             validationResult(req).throw()
             return next()
         } catch (error) {
+            req.logger.error(error.message)
             return res.status(400).json({ 
                 status: 'error',
                 errors: error.array() 
@@ -41,6 +42,7 @@ export const validateUserLogin = [
             validationResult(req).throw()
             return next()
         } catch (error) {
+            req.logger.error(error.message)
             return res.status(400).json({ 
                 status: 'error',
                 errors: error.array()

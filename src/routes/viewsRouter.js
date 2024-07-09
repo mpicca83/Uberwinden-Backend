@@ -19,7 +19,7 @@ router.get('/realtimeproducts', auth(['public']), async(req, res) => {
         const products = await productService.getProducts()
 
         io.on("connection", socket=> {
-            console.log(`Se ha conectado un cliente con id ${socket.id}`)
+            req.logger.http(`Se ha conectado un cliente con id ${socket.id}`)
             
             socket.emit('productsAll', { products })
         })
@@ -27,7 +27,7 @@ router.get('/realtimeproducts', auth(['public']), async(req, res) => {
         return res.status(200).render('realTimeProducts', { products })
 
     } catch (error) {
-        console.error(error.message)
+        req.logger.error(error.message)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
@@ -47,7 +47,7 @@ router.get('/chat', passportCall("current"), auth(['user']), async(req, res) => 
         return res.status(200).render('chat', {user: req.user})
 
     } catch (error) {
-        console.error(error.message)
+        req.logger.error(error.message)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
@@ -82,7 +82,7 @@ router.get('/products', auth(['public']),  async(req, res) => {
         return res.status(200).render('products', {products, user: user})
 
     } catch (error) {
-        console.error(error.message)
+        req.logger.error(error.message)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
@@ -105,7 +105,7 @@ router.get('/carts/:cid', passportCall("current"), auth(['user', 'admin']), asyn
         res.setHeader('Content-Type','text/html')
         return res.status(200).render('carts', {cart, user: req.user})
     } catch (error) {
-        console.error(error.message)
+        req.logger.error(error.message)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
@@ -145,7 +145,7 @@ router.get('/mockingproducts', auth(['public']),  async(req, res) => {
         return res.status(200).render('mockingProducts', {products, user: req.user})
 
     } catch (error) {
-        console.error(error.message)
+        req.logger.error(error.message)
         res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {

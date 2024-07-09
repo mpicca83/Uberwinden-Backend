@@ -40,7 +40,7 @@ export class ProcuctController{
             })
     
         } catch (error) {
-            console.error(error)
+            req.logger.error(error.message)
             res.setHeader('Content-Type','application/json')
             return res.status(500).json(
                 {
@@ -67,7 +67,7 @@ export class ProcuctController{
             }) 
     
         } catch (error) {
-            console.error(error)
+            req.logger.error(error.message)
             res.setHeader('Content-Type','application/json')
             return res.status(500).json(
                 {
@@ -115,6 +115,7 @@ export class ProcuctController{
             })
     
         } catch (error) {
+            req.logger.error(error.message)
             res.setHeader('Content-Type','application/json')
             return res.status(500).json(
                 {
@@ -158,6 +159,7 @@ export class ProcuctController{
             })
     
         } catch (error) {
+            req.logger.error(error.message)
             res.setHeader('Content-Type','application/json')
             return res.status(500).json(
                 {
@@ -187,6 +189,7 @@ export class ProcuctController{
             })
              
         } catch (error) {
+            req.logger.error(error.message)
             res.setHeader('Content-Type','application/json')
             return res.status(500).json(
                 {
