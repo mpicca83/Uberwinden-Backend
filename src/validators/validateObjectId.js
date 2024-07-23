@@ -10,7 +10,10 @@ export const validateObjectId = [
         .optional()
         .isMongoId()
         .withMessage('El id del carrito no es un id válido'),
-
+    check('uid')
+        .optional()
+        .isMongoId()
+        .withMessage('El id del usuario no es un id válido'),
 
     (req, res, next) => {
         try {

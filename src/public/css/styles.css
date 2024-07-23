@@ -251,7 +251,7 @@ ul {
     justify-content: center;
     align-items:center ;
     width: 400px;
-    height: 300px;
+    height: 330px;
     background-color: rgb(204, 186, 234);
     margin: auto;
     margin-top: 50px;
@@ -317,4 +317,20 @@ ul {
     display: flex;
     margin: auto;
     margin-top: 20px;
+}
+
+.note{
+    text-align: center  ;
+}
+
+.reset{
+    color: #6526c2;
+}
+
+.reset:hover{
+    color: #9a64e9;
+}
+
+.restablecer{
+    margin-top: 60px;
 }

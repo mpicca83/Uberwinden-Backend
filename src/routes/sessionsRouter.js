@@ -1,10 +1,11 @@
 import { Router } from 'express'
-import { validateUserLogin, validateUserRegistration } from '../validators/validateUser.js'
+import { validateForgot, validateReset, validateUserLogin, validateUserRegistration } from '../validators/validateUser.js'
 import jwt from 'jsonwebtoken'
 import { passportCall } from '../utils.js'
 import { auth } from '../middleware/auth.js'
 import { config } from '../config/config.js'
 import { UserDTO } from '../dto/UserDTO.js'
+import { UserController } from '../controller/UserControllers.js'
 
 export const router=Router()
 
@@ -15,7 +16,7 @@ router.post('/register', validateUserRegistration, passportCall('register'), aut
     res.setHeader('Content-Type','application/json')
     return res.status(201).json({
         status: 'success',
-        payload: 'Registro exitoso.',
+        message: 'Registro exitoso.',
         user: req.user
     })
 })
@@ -32,7 +33,7 @@ router.post('/login', validateUserLogin, passportCall('login'), auth(['public'])
     res.setHeader('Content-Type','application/json')
     return res.status(200).json({
         status: 'success',
-        payload: 'Login exitoso.',
+        message: 'Login exitoso.',
         user: user, 
         token
     })
@@ -66,7 +67,7 @@ router.get('/logout', async(req, res) => {
         res.setHeader('Content-Type','application/json')
         return res.status(200).json({
             status: 'success',
-            payload:'Logout Exitoso...!!!'
+            message:'Logout Exitoso...!!!'
         })    
     }
 })
@@ -83,11 +84,15 @@ router.get('/callbackGithub', passportCall('github'), (req, res) => {
     return res.redirect(`/products`)
 })
 
-router.get('/current', passportCall('current'), auth(['user', 'admin']), (req, res) => {
+router.get('/current', passportCall('current'), auth(['user', 'premium', 'admin']), (req, res) => {
     res.setHeader('Content-Type','application/json')
     return res.status(200).json({
         status: 'success',
-        payload: 'Datos del usuario registrado.',
+        message: 'Datos del usuario registrado.',
         user: new UserDTO(req.user)
     })
 })
+
+router.post('/forgotPassword', auth(['public']), validateForgot, UserController.forgotPassword)
+
+router.post('/resetPassword', auth(['public']), validateReset, UserController.resetPassword)

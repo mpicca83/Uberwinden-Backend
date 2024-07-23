@@ -82,6 +82,10 @@ export class ProcuctController{
     static createProduct=async(req, res) => {
 
         const {title, description, code, price, status=true, stock, category, thumbnails=[]} = req.body
+        const {user} = req
+        let owner = ''
+
+        user.rol === 'premium' ? (owner=user.email) : (owner='admin')
     
         const product = {
             title,
@@ -91,7 +95,8 @@ export class ProcuctController{
             status,
             stock,
             category,
-            thumbnails
+            thumbnails,
+            owner
         }
     
         try {
@@ -131,6 +136,8 @@ export class ProcuctController{
 
         let {pid} = req.params
         const objetUpdate = req.body
+        const {user} = req
+        let update = {}
     
         try {
     
@@ -146,17 +153,27 @@ export class ProcuctController{
                     })
                 }
             }
-    
-            const update = await productService.updateProduct(pid, objetUpdate)
-    
-            const products = await productService.getProducts()
-            io.emit('productsAll', { products })
-    
-            res.setHeader('Content-Type','application/json')
-            return res.status(200).json({
-                status: 'success',
-                payload: update
-            })
+
+            const product = await productService.getProductBy({_id:pid})
+            if(user.rol === 'admin' || user.rol === 'premium' && user.email === product.owner){
+                update = await productService.updateProduct(pid, objetUpdate)
+
+                const products = await productService.getProducts()
+                io.emit('productsAll', { products })
+        
+                res.setHeader('Content-Type','application/json')
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'Producto actualizado correctamente.',
+                    payload: update
+                })
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(400).json({
+                    status: 'error',
+                    message: 'No posee los permisos suficientes para realizar esta acción.'
+                })
+            }
     
         } catch (error) {
             req.logger.error(error.message)
@@ -173,20 +190,31 @@ export class ProcuctController{
 
     static deleteProduct=async(req, res) => {
 
-        let {pid} = req.params
+        const {pid} = req.params
+        const {user} = req
     
         try {
             
-            const data = await productService.deleteProduct(pid)
-    
-            const products = await productService.getProducts()
-            io.emit('productsAll', { products })
-            
-            res.setHeader('Content-Type','application/json')
-            return res.status(200).json({
-                status: 'success',
-                payload:`Producto con id ${pid} eliminado correctamente.`
-            })
+            const product = await productService.getProductBy({_id:pid})
+            if(user.rol === 'admin' || user.rol === 'premium' && user.email === product.owner){
+                
+                await productService.deleteProduct(pid)
+
+                const products = await productService.getProducts()
+                io.emit('productsAll', { products })
+        
+                res.setHeader('Content-Type','application/json')
+                return res.status(200).json({
+                    status: 'success',
+                    message:`Producto con id ${pid} eliminado correctamente.`
+                })
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(400).json({
+                    status: 'error',
+                    message: 'No posee los permisos suficientes para realizar esta acción.'
+                })
+            }
              
         } catch (error) {
             req.logger.error(error.message)

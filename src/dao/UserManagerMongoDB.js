@@ -10,5 +10,9 @@ export class UserManagerMongoDB {
     async getUserBy(filtro){
         return await usersModel.findOne(filtro).populate("cart").lean()
     }
+
+    async updateUser(id, objetUpdate){
+        return await usersModel.findByIdAndUpdate(id, objetUpdate, {runValidators: true, returnDocument: "after"})
+    }
 }
 

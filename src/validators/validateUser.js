@@ -20,10 +20,9 @@ export const validateUserRegistration = [
             validationResult(req).throw()
             return next()
         } catch (error) {
-            req.logger.error(error.message)
             return res.status(400).json({ 
                 status: 'error',
-                errors: error.array() 
+                message: error.array() 
             })
         }
     }
@@ -42,11 +41,71 @@ export const validateUserLogin = [
             validationResult(req).throw()
             return next()
         } catch (error) {
-            req.logger.error(error.message)
             return res.status(400).json({ 
                 status: 'error',
-                errors: error.array()
+                message: error.array()
             })
         }
     }
 ]
+
+export const validateForgot = [
+
+    check('email')
+        .notEmpty().withMessage('Email es requerido.')
+        .isEmail().withMessage('Debe ser un email válido.'),
+
+    async (req, res, next) => {
+        try {
+            validationResult(req).throw()
+            return next()
+        } catch (error) {
+            return res.status(400).json({ 
+                status: 'error',
+                message: error.array()
+            })
+        }
+    }
+]
+
+export const validateReset = [
+
+    check('password')
+        .notEmpty().withMessage('Password es requerido.'),
+
+    async (req, res, next) => {
+        try {
+            validationResult(req).throw()
+            return next()
+        } catch (error) {
+            return res.status(400).json({ 
+                status: 'error',
+                message: error.array()
+            })
+        }
+    }
+]
+
+export const validateRol = [
+
+    check('rol')
+        .notEmpty().withMessage('Rol es requerido.')
+        .custom((value, {req}) => {
+            if(req.body.rol !== 'user' && req.body.rol !== 'premium'){
+                throw new Error('Solo se admiten las opciones user y premium.')
+            }
+            return true
+        }),
+    async (req, res, next) => {
+        try {
+            validationResult(req).throw()
+            return next()
+        } catch (error) {
+            return res.status(400).json({ 
+                status: 'error',
+                message: error.array()
+            })
+        }
+    }
+]
+

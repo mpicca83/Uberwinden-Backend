@@ -1,10 +1,11 @@
 import { validationResult } from 'express-validator'
 import { cartService } from '../repositories/CartService.js'
 import { productService } from '../repositories/ProductService.js'
+import { userService } from '../repositories/UserService.js'
 
 export const validateExistence = async (req, res, next) => {
 
-    const { pid, cid } = req.params
+    const { cid, pid, uid } = req.params
 
     try {
 
@@ -15,7 +16,7 @@ export const validateExistence = async (req, res, next) => {
                 
                 return res.status(404).json({
                     status: 'error',
-                    error: `No existe un carrito con id ${cid}`
+                    message: `No existe un carrito con id ${cid}`
                 })
             }
         }
@@ -25,7 +26,17 @@ export const validateExistence = async (req, res, next) => {
             if (!product) {
                 return res.status(404).json({
                     status: 'error',
-                    error: `No existe un producto con id ${pid}`
+                    message: `No existe un producto con id ${pid}`
+                })
+            }
+        }
+        // Verificar si el usuario existe
+        if(uid){
+            const user = await userService.getUserBy({ _id: uid })
+            if (!user) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: `No existe un usuario con id ${uid}`
                 })
             }
         }
@@ -41,13 +52,13 @@ export const validateExistence = async (req, res, next) => {
         )
     }
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ 
-            status: 'error',
-            errors: errors.array() 
-        })
-    }
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //     return res.status(400).json({ 
+    //         status: 'error',
+    //         errors: errors.array() 
+    //     })
+    // }
 
     next()
 }

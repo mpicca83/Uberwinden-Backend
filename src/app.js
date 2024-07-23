@@ -5,6 +5,7 @@ import { router as viewsRouter } from './routes/viewsRouter.js'
 import { router as sessionsRouter} from './routes/sessionsRouter.js'
 import { router as mockingRouter } from './routes/mockingRouter.js'
 import { router as loggerTestRouter } from './routes/loggerTestRouter.js'
+import { router as usersRouter } from './routes/usersRouter.js'
 import { join } from 'path'
 import __dirname from './utils.js'
 import { engine } from 'express-handlebars'
@@ -64,6 +65,7 @@ app.use('/api/carts', cartRouter)
 app.use('/api/sessions', sessionsRouter)
 app.use('/api/mocking', mockingRouter)
 app.use('/api/loggerTest', loggerTestRouter)
+app.use('/api/users', usersRouter)
 app.use('/', viewsRouter)
 
 app.use((error, req, res, next) => {

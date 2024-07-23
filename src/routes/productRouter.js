@@ -12,8 +12,8 @@ router.get('/', auth(['public']), ProcuctController.getProducts)
 
 router.get('/:pid', auth(['public']), validateObjectId, validateExistence, ProcuctController.getProductBy)
 
-router.post('/', passportCall('current'), auth(['admin']), validateCreate, ProcuctController.createProduct)
+router.post('/', passportCall('current'), auth(['premium', 'admin']), validateCreate, ProcuctController.createProduct)
 
-router.put('/:pid', passportCall('current'), auth(['admin']), validateUpdate, validateObjectId, validateExistence, ProcuctController.updateProduct)
+router.put('/:pid', passportCall('current'), auth(['premium', 'admin']), validateUpdate, validateObjectId, validateExistence, ProcuctController.updateProduct)
 
-router.delete('/:pid', passportCall('current'), auth(['admin']), validateObjectId, validateExistence, ProcuctController.deleteProduct)
+router.delete('/:pid', passportCall('current'), auth(['premium', 'admin']), validateObjectId, validateExistence, ProcuctController.deleteProduct)

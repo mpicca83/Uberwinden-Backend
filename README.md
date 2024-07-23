@@ -1,7 +1,7 @@
 
 # Programación Backend
 
-Este es un proyecto para la entrega del desafío "Implementación de logger" en el curso de Programación Backend
+Este es un proyecto para la entrega de la "Terceta Práctica Integradora" en el curso de Programación Backend
 
 
 **Para iniciar en "Modo Development"**

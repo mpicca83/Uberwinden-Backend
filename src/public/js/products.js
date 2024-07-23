@@ -20,23 +20,25 @@ const comprar=async(pid)=>{
     })
     .then (async response => {
 
-        await verifyToken(response)
+        let resp = await response.json()
+        
+        if (resp.error === 'El token ha expirado.' || resp.error === 'jwt expired') {
 
-        if(response.status===200){
             Toastify({
-                text: "Producto agregado al carrito...!!!",
+                text: "La sesión ha expirado...",
                 duration: 3000,
                 gravity: 'bottom',
                 style: {
-                    background: "linear-gradient(to right, #00b09b, #96c93d)",
+                    background: "linear-gradient(to right, #ff0000, #ff4d4d)",
                 },
             }).showToast()
-        }    
-        
-        if(response.status===404){
-            
+    
+            setTimeout(async()=>{
+                window.location.href='/api/sessions/logout?web=true'
+            },4000)
+        }else{
             Toastify({
-                text: "No es posible incrementar en más del stock.",
+                text: resp.message,
                 duration: 3000,
                 gravity: 'bottom',
                 style: {

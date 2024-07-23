@@ -61,8 +61,18 @@ export class CartController{
     static addProductToCart=async(req, res) => {
 
         const { cid, pid } = req.params
-    
+        const {user} = req
+
         try {
+
+            let product = await productService.getProductBy({_id:pid})
+            if(product.owner === user.email){
+                res.setHeader('Content-Type','application/json')
+                return res.status(404).json({
+                    status: 'error',
+                    message:`Este producto ya le pertenece, no puede agregarlo al carrito.`
+                })
+            }
     
             let cart = await cartService.getCartById(cid)
     
@@ -79,7 +89,7 @@ export class CartController{
                 res.setHeader('Content-Type','application/json')
                 return res.status(404).json({
                     status: 'error',
-                    error:`No es posible incrementar el quantity en más del stock.`
+                    message:`No es posible incrementar en más del stock.`
                 })
             }
     
@@ -89,6 +99,7 @@ export class CartController{
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
                 status: 'success',
+                message: 'Producto agregado al carrito...!!!',
                 payload: data
             })
     
@@ -98,7 +109,7 @@ export class CartController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                     detail:`${error.message}`
                 }
             )
@@ -127,6 +138,7 @@ export class CartController{
                 res.setHeader('Content-Type','application/json')
                 return res.status(200).json({
                     status: 'success',
+                    message: 'Producto eliminado.',
                     payload: data
                 })
             }else{
@@ -226,9 +238,21 @@ export class CartController{
 
         const { cid } = req.params
         const objetUpdate = req.body
-    
+        const {user} = req
+
         try {
             
+            for (let i = 0; i < objetUpdate.products.length; i++) {
+                let product = await productService.getProductBy({_id:objetUpdate.products[i].product})
+                if(product.owner === user.email){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(404).json({
+                        status: 'error',
+                        message:`El producto con id: ${objetUpdate.products[i].product} ya le pertenece, no puede agregarlo al carrito.`
+                    })
+                }
+            }
+
             const data = await cartService.updateCart(cid, objetUpdate)
                 
             res.setHeader('Content-Type','application/json')

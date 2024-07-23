@@ -39,7 +39,7 @@ router.get('/realtimeproducts', auth(['public']), async(req, res) => {
     }
 })
 
-router.get('/chat', passportCall("current"), auth(['user']), async(req, res) => {
+router.get('/chat', passportCall("current"), auth(['user', 'premium']), async(req, res) => {
 
     try {
 
@@ -94,7 +94,7 @@ router.get('/products', auth(['public']),  async(req, res) => {
     }
 })
 
-router.get('/carts/:cid', passportCall("current"), auth(['user', 'admin']), async(req, res) => {
+router.get('/carts/:cid', passportCall("current"), auth(['user', 'premium', 'admin']), async(req, res) => {
 
     let {cid} = req.params
 
@@ -155,6 +155,24 @@ router.get('/mockingproducts', auth(['public']),  async(req, res) => {
             }
         )
     }
+})
 
+router.get('/forgotPassword', auth(['public']), (req, res)=>{
 
+    if(req.cookies["cookieToken"]){
+        return res.redirect("/products")
+    }else{
+        return res.status(200).render('forgotPassword') 
+    }
+})
+
+router.get('/resetPassword', auth(['public']), (req, res)=>{
+
+    let {token} = req.query
+
+    if(req.cookies["cookieToken"]){
+        return res.redirect("/products")
+    }else{
+        return res.status(200).render('resetPassword',{token}) 
+    }
 })
