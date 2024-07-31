@@ -30,7 +30,8 @@ export const validateCreate = [
             req.logger.error(error.message)
             return res.status(400).json({ 
                 status: 'error',
-                errors: error.array() 
+                error: 'Bad Request',
+                message: error.array() 
             })
         }
     }
@@ -68,7 +69,8 @@ export const validateUpdate = [
         if(!valido){
             return res.status(400).json({
                 status: 'error',
-                error:'Solo es posible modificar los siguientes parametros: title, description, code, price, status, stock, category, thumbnails'
+                error: 'Bad Request',
+                message:'Solo es posible modificar los siguientes parametros: title, description, code, price, status, stock, category, thumbnails'
             })
         }
 
@@ -83,7 +85,8 @@ export const validateUpdate = [
             req.logger.error(error.message)
             return res.status(400).json({ 
                 status: 'error',
-                errors: error.array()
+                error: 'Bad Request',
+                message: error.array()
             })
         }
     }

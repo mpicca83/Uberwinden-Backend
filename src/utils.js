@@ -20,7 +20,11 @@ export const passportCall = (strategy) => {
             }
             if(!user){
                 res.setHeader('Conten-Type', 'application/json')
-                return res.status(401).json({error: info.message ? info.message : info.toStryng()})
+                return res.status(401).json({
+                    status: 'error',
+                    error: 'Unauthorized',
+                    message: info.message ? info.message : info.toStryng()
+                })
             }
         
             req.user = user

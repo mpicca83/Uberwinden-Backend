@@ -1,0 +1,236 @@
+paths:
+  /api/products:
+    post:
+      summary: Crea un nuevo producto
+      description: |
+        Crear un nuevo producto en la base de datos.
+
+        Los siguientes datos son requeridos: title, description, code, price, stock, category. Opcionalmente: status que por defecto se guarda en true y thumbnails.
+        
+        **Roles autorizados**: admin y premium
+      tags:
+        - Products
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/schemas/ProductBody'
+      responses:
+        200:
+          description: Producto creado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: El producto se ha creado con éxito.
+                  payload:
+                    $ref: '#components/schemas/Product'
+        409:
+          $ref: '#/components/responses/409'
+        500:
+          $ref: '#/components/responses/500'
+    get:
+      summary: Obtiene una lista de productos
+      description: Devuelve una lista de productos con opciones de paginación, filtrado y ordenación.
+      tags:
+        - Products
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+            default: 10
+          description: Número de productos a devolver por página.
+        - in: query
+          name: page
+          schema:
+            type: integer
+            example: 1
+            default: 1
+          description: Número de página a devolver.
+        - in: query
+          name: sort
+          schema:
+            type: integer
+            enum: [1, -1]
+            example: 1
+          description: Ordenar los productos por precio (1 para ascendente, -1 para descendente).
+        - in: query
+          name: category
+          schema:
+            type: string
+            example: remera
+          description: Filtrar productos por categoría (búsqueda parcial, no sensible a mayúsculas).
+        - in: query
+          name: status
+          schema:
+            type: boolean
+            example: true
+          description: Filtrar productos por estado (true para activos, false para inactivos).
+      responses:
+        '200':
+          description: Lista de productos obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Productos obtenidos con éxito.
+                  payload:
+                    $ref: '#components/schemas/Product'
+                  totalPages:
+                    type: integer
+                    example: 5
+                  prevPage:
+                    type: integer
+                    example: 1
+                  nextPage:
+                    type: integer
+                    example: 3
+                  page:
+                    type: integer
+                    example: 2
+                  hasPrevPage:
+                    type: boolean
+                    example: true
+                  hasNextPage:
+                    type: boolean
+                    example: true
+                  prevLink:
+                    type: string
+                    nullable: true
+                    example: 'http://localhost:3000/api/products?page=1'
+                  nextLink:
+                    type: string
+                    nullable: true
+                    example: 'http://localhost:3000/api/products?page=3'
+        500:
+          $ref: '#/components/responses/500'
+  /api/products/{pid}:
+    get:
+      summary: Obtiene un producto especifico
+      description: Devuelve un producto especifico según el _id 
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+            example: 663426cc73e91c0cf32a4015
+          description: _id de producto a buscar en la BD
+      responses:
+        '200':
+          description: Producto obtenido con éxito.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Producto obtenido con éxito.
+                  payload:
+                    $ref: '#components/schemas/Product'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      summary: Actualiza un producto existente
+      description: |
+        Actualiza un producto en la base de datos según el _id proporcionado.
+
+        **Roles autorizados**: admin y premium (solo para productos propios)
+      tags:
+        - Products
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+            example: 663426cc73e91c0cf32a4015
+          description: _id de producto a actualizar.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/schemas/ProductBody'
+      responses:
+        '200':
+          description: Producto actualizado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Producto actualizado correctamente.
+                  payload:
+                    $ref: '#/components/schemas/Product'
+        403:
+          $ref: '#/components/responses/403'
+        409:
+          $ref: '#/components/responses/409'
+        500:
+          $ref: '#/components/responses/500'
+    delete:
+      summary: Elimina un producto
+      description: |
+        Elimina un producto específico según el _id.
+
+        **Roles autorizados**: admin y premium (solo para productos propios)
+      tags:
+        - Products
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+          description: _id del producto a eliminar.
+      responses:
+        200:
+          description: Producto eliminado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Producto con id 663426cc73e91c0cf32a4015 eliminado correctamente."
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'

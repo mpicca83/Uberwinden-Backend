@@ -20,6 +20,8 @@ import { config } from "./config/config.js"
 import { messageService } from './repositories/MessageService.js'
 import cors from 'cors'
 import { logger, middLogger } from './middleware/logger.js'
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
 
 const { PORT, MONGO_URL, DB_NAME } = config
 
@@ -60,6 +62,31 @@ app.engine('handlebars', engine())
 app.set('view engine', 'handlebars') 
 app.set('views', join(__dirname, 'views')) 
 
+    //Configuración de SWAGGER
+const options={
+    definition:{
+        openapi:'3.0.0',
+        info:{
+            title:'API para Ecommerce',
+            version:'1.0.0',
+            description:'Documentación para el correcto uso de la API'
+        },
+        servers:[
+            {
+                url: "http://localhost:8080",
+                description: "Development"
+            },
+            {
+                url: "http://localhost:3001",
+                description: "Production"
+            },
+        ]
+    },
+    apis:['./src/docs/*.yaml']
+}
+const spec=swaggerJSDoc(options)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(spec))
+
 app.use('/api/products', productRouter)
 app.use('/api/carts', cartRouter)
 app.use('/api/sessions', sessionsRouter)
@@ -68,6 +95,7 @@ app.use('/api/loggerTest', loggerTestRouter)
 app.use('/api/users', usersRouter)
 app.use('/', viewsRouter)
 
+
 app.use((error, req, res, next) => {
 
     if(error){
@@ -75,9 +103,9 @@ app.use((error, req, res, next) => {
         return res.status(500).json(
             {
                 status: 'error',
-                error:'Error inesperado en el servidor.',
-                detail: `${error.message}`
-            }
+                error: 'Internal Server Error',
+                message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+        }
         )
     }
     next()

@@ -1,0 +1,203 @@
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: cookieToken
+  
+  schemas:
+    ProductBody:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Titulo del producto"
+        description:
+          type: string
+          example: "Descripción del producto"
+        code:
+          type: string
+          example: "ABC123"
+        price:
+          type: number
+          example: 19.99
+        status:
+          type: boolean
+          example: true
+        stock:
+          type: integer
+          example: 100
+        category:
+          type: string
+          example: "electronics"
+        thumbnails:
+          type: array
+          items:
+            type: string
+          example: ["image1.jpg", "image2.jpg"]
+    Product:
+      allOf:
+        - type: object
+          properties:
+            _id:
+              type: string
+              example: 60d0fe4f5311236168a109ca
+        - $ref: '#/components/schemas/ProductBody'
+        - type: object
+          properties:
+            owner:
+              type: string
+              example: "premium@example.com"
+            createdAt:
+              type: string 
+              example: 2024-05-02T23:49:18.016Z
+            updatedAt:
+              type: string 
+              example: 2024-07-22T20:53:56.607Z
+            __v:
+              type: number 
+              example: 0
+    CartPopulate:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 60d0fe4f5311236168a109ca
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                $ref: '#components/schemas/Product'
+              quantity:
+                type: number
+                example: 2
+              _id:
+                type: string
+                example: 666b4626bfb16b42c4e39737
+        createdAt:
+          type: string
+          example: 2024-07-25T23:49:18.016Z
+        updatedAt:
+          type: string
+          example: 2024-07-25T23:49:18.016Z
+        __v:
+          type: number
+          example: 0
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 60d0fe4f5311236168a109ca
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                example: 60d0fe4f5311236168a109ca
+              quantity:
+                type: number
+                example: 2
+              _id:
+                type: string
+                example: 666b4626bfb16b42c4e39737
+        createdAt:
+          type: string
+          example: 2024-07-25T23:49:18.016Z
+        updatedAt:
+          type: string
+          example: 2024-07-25T23:49:18.016Z
+        __v:
+          type: number
+          example: 0
+
+  responses:
+    401:
+      description: Credenciales invalidas.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              error:
+                type: string
+                example: Unauthorized
+              message:
+                type: string
+                example: Credenciales inválidas.
+    403:
+      description: Permisos insuficientes para realizar la acción
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              error:
+                type: string
+                example: Forbidden
+              message:
+                type: string
+                example: "No posee los permisos suficientes para realizar esta acción."
+    404:
+      description: El recurso solicitado no se pudo encontrar.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              error:
+                type: string
+                example: Not Found
+              message:
+                type: string
+                example: El recurso solicitado no se pudo encontrar
+    409:
+      description: Código ya existe.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              error:
+                type: string
+                example: Conflict
+              message:
+                type: string
+                example: El code ABC123 ya se encuentra registrado
+    500:
+      description: Error inesperado en el servidor
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              error:
+                type: string
+                example: Internal Server Error
+              message:
+                type: string
+                example: "Error inesperado en el servidor - Intente más tarde, o contacte a su administrador."
+
+
+
+  
+

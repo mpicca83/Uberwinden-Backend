@@ -40,7 +40,7 @@ const login = async(e) => {
         }
         else{
             Toastify({
-                text: resp.error,
+                text: resp.message,
                 duration: 3000,
                 gravity: 'top',
                 position: 'center',
@@ -94,7 +94,7 @@ const register = async(e) => {
         }
         else{
             Toastify({
-                text: resp.error,
+                text: resp.message,
                 duration: 3000,
                 gravity: 'top',
                 position: 'center',

@@ -15,6 +15,7 @@ export class CartController{
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
                 status: 'success',
+                message: 'Carrito creado con éxito.',
                 payload: newCart
             })
     
@@ -24,8 +25,8 @@ export class CartController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -41,7 +42,8 @@ export class CartController{
     
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
-                status: 'seccess',
+                status: 'success',
+                message: 'Carrito obtenido con éxito.',
                 payload: data
             }) 
     
@@ -51,8 +53,8 @@ export class CartController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -65,43 +67,55 @@ export class CartController{
 
         try {
 
-            let product = await productService.getProductBy({_id:pid})
-            if(product.owner === user.email){
-                res.setHeader('Content-Type','application/json')
-                return res.status(404).json({
-                    status: 'error',
-                    message:`Este producto ya le pertenece, no puede agregarlo al carrito.`
-                })
-            }
-    
-            let cart = await cartService.getCartById(cid)
-    
-            let quantityError = false
-            cart.products.forEach(i => {
-                if(i.product._id == pid){
-                    if(i.quantity === i.product.stock ){
-                        quantityError = true
-                    }
+            if(user.cart._id === cid){
+                let product = await productService.getProductBy({_id:pid})
+                if(product.owner === user.email){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(403).json({
+                        status: 'error',
+                        error: 'Forbidden',
+                        message:`Este producto ya le pertenece, no puede agregarlo al carrito.`
+                    })
                 }
-            })
-    
-            if(quantityError){
-                res.setHeader('Content-Type','application/json')
-                return res.status(404).json({
-                    status: 'error',
-                    message:`No es posible incrementar en más del stock.`
+        
+                let cart = await cartService.getCartById(cid)
+        
+                let quantityError = false
+                cart.products.forEach(i => {
+                    if(i.product._id == pid){
+                        if(i.quantity === i.product.stock ){
+                            quantityError = true
+                        }
+                    }
                 })
-            }
-    
-            let data = await cartService.incQuantity(cid, pid)
-            !data && (data = await cartService.addProductToCart(cid, { product: pid, quantity: 1 }))
+        
+                if(quantityError){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(409).json({
+                        status: 'error',
+                        error: 'Conflict',
+                        message:`No es posible incrementar en más del stock.`
+                    })
+                }
+        
+                let data = await cartService.incQuantity(cid, pid)
+                !data && (data = await cartService.addProductToCart(cid, { product: pid, quantity: 1 }))
 
-            res.setHeader('Content-Type','application/json')
-            return res.status(200).json({
-                status: 'success',
-                message: 'Producto agregado al carrito...!!!',
-                payload: data
-            })
+                res.setHeader('Content-Type','application/json')
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'Producto agregado al carrito...!!!',
+                    payload: data
+                })
+
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(403).json({
+                    status: 'error',
+                    error: 'Forbidden',
+                    message: 'No posee los permisos suficientes para realizar esta acción.',
+                }) 
+            }
     
         } catch (error) {
             req.logger.error(error.message)
@@ -109,8 +123,8 @@ export class CartController{
             return res.status(500).json(
                 {
                     status: 'error',
+                    error: 'Internal Server Error',
                     message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
                 }
             )
         }
@@ -119,44 +133,57 @@ export class CartController{
     static deleteProductToCart=async(req, res) => {
 
         const { cid, pid } = req.params
-    
+        const { user } = req
+
         try {
-    
-            let cart = await cartService.getCartById(cid)
-            
-            let productId = null
-            cart.products.forEach(i => {
-                if(i.product._id.toString() === pid){
-                    productId = i._id.toString() 
-                }
-            })
-    
-            if(productId){
-    
-                const data = await cartService.deleteProductToCart(cid, productId)
+
+            if(user.cart._id === cid){
+
+                let cart = await cartService.getCartById(cid)
                 
-                res.setHeader('Content-Type','application/json')
-                return res.status(200).json({
-                    status: 'success',
-                    message: 'Producto eliminado.',
-                    payload: data
+                let productId = null
+                cart.products.forEach(i => {
+                    if(i.product._id.toString() === pid){
+                        productId = i._id.toString() 
+                    }
                 })
+        
+                if(productId){
+        
+                    const data = await cartService.deleteProductToCart(cid, productId)
+                    
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(200).json({
+                        status: 'success',
+                        message: 'Producto eliminado del carrito.',
+                        payload: data
+                    })
+                }else{
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(404).json({
+                        status: 'error',
+                        error: 'Not Found',
+                        message:`No existe un producto con id ${pid} en el carrito`
+                    })
+                }
+
             }else{
                 res.setHeader('Content-Type','application/json')
-                return res.status(404).json({
+                return res.status(403).json({
                     status: 'error',
-                    error:`No existe un producto con id ${pid} en el carrito`
-                })
+                    error: 'Forbidden',
+                    message: 'No posee los permisos suficientes para realizar esta acción.',
+                }) 
             }
-    
+
         } catch (error) {
             req.logger.error(error.message)
             res.setHeader('Content-Type','application/json')
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -165,16 +192,27 @@ export class CartController{
     static deleteProductsToCart=async(req, res) => {
 
         const { cid } = req.params
-    
+        const {user} =req
+
         try {
             
-            const data = await cartService.deleteProductsToCart(cid)
-                
-            res.setHeader('Content-Type','application/json')
-            return res.status(200).json({
-                status: 'success',
-                payload: data
-            })
+            if(user.cart._id === cid){
+                const data = await cartService.deleteProductsToCart(cid)
+                    
+                res.setHeader('Content-Type','application/json')
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'Productos eliminados del carrito con éxito.',
+                    payload: data
+                })
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(403).json({
+                    status: 'error',
+                    error: 'Forbidden',
+                    message: 'No posee los permisos suficientes para realizar esta acción.',
+                })               
+            }
     
         } catch (error) {
             req.logger.error(error.message)
@@ -182,8 +220,8 @@ export class CartController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -192,34 +230,48 @@ export class CartController{
     static updateQuantityToProduct=async(req, res) => {
 
         const { cid, pid } = req.params
+        const { user } = req
         const { quantity } = req.body
     
-        if(!quantity || quantity < 1){
-            res.setHeader('Content-Type','application/json')
-            return res.status(400).json({
-                status: 'error',
-                error:`Quantity debe ser mayor a 0.`
-            })
-    
-        }
-    
         try {
-    
-            const data = await cartService.updateQuantityToProduct(cid, pid, quantity)
-    
-            if(!data){
+
+            if(user.cart._id === cid){
+
+                if(!quantity || quantity < 1){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(409).json({
+                        status: 'error',
+                        error: 'Conflict',
+                        message:`Quantity debe ser mayor a 0.`
+                    })
+                }
+
+                const data = await cartService.updateQuantityToProduct(cid, pid, quantity)
+        
+                if(!data){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(404).json({
+                        status: 'error',
+                        error: 'Not Found',
+                        message:`No existe un producto con id ${pid} en el carrito`
+                    })
+                }
+                        
                 res.setHeader('Content-Type','application/json')
-                return res.status(404).json({
-                    status: 'error',
-                    error:`No existe un producto con id ${pid} en el carrito`
+                return res.status(200).json({
+                    status: 'success',
+                    message: `La actualización de la cantidad en el producto con id ${pid} se realizó correctamente`,
+                    payload: data
                 })
+
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(403).json({
+                    status: 'error',
+                    error: 'Forbidden',
+                    message: 'No posee los permisos suficientes para realizar esta acción.',
+                }) 
             }
-                    
-            res.setHeader('Content-Type','application/json')
-            return res.status(200).json({
-                status: 'success',
-                payload: data
-            })
     
         } catch (error) {
             req.logger.error(error.message)
@@ -227,8 +279,8 @@ export class CartController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -246,20 +298,34 @@ export class CartController{
                 let product = await productService.getProductBy({_id:objetUpdate.products[i].product})
                 if(product.owner === user.email){
                     res.setHeader('Content-Type','application/json')
-                    return res.status(404).json({
+                    return res.status(403).json({
                         status: 'error',
+                        error: 'Forbidden',
                         message:`El producto con id: ${objetUpdate.products[i].product} ya le pertenece, no puede agregarlo al carrito.`
                     })
                 }
             }
 
-            const data = await cartService.updateCart(cid, objetUpdate)
+            if(user.cart._id === cid){
+
+                const data = await cartService.updateCart(cid, objetUpdate)
                 
-            res.setHeader('Content-Type','application/json')
-            return res.status(200).json({
-                status: 'success',
-                payload: data
-            })
+                res.setHeader('Content-Type','application/json')
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'Carrito modificado con éxito.',
+                    payload: data
+                })
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(403).json({
+                    status: 'error',
+                    error: 'Forbidden',
+                    message: 'No posee los permisos suficientes para realizar esta acción.',
+                })               
+            }
+
+
     
         } catch (error) {
             req.logger.error(error.message)
@@ -267,8 +333,8 @@ export class CartController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -277,43 +343,58 @@ export class CartController{
     static updateIncQuantityToProduct=async(req, res) => {
 
         const { cid, pid } = req.params
-    
+        const { user } = req
+
         try {
     
-            let cart = await cartService.getCartById(cid)
-    
-            let quantityError = false
-            cart.products.forEach(i => {
-                if(i.product._id == pid){
-                    if(i.quantity >= i.product.stock ){
-                        quantityError = true
+            if(user.cart._id === cid){
+
+                let cart = await cartService.getCartById(cid)
+        
+                let quantityError = false
+                cart.products.forEach(i => {
+                    if(i.product._id == pid){
+                        if(i.quantity >= i.product.stock ){
+                            quantityError = true
+                        }
                     }
+                })
+        
+                if(quantityError){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(409).json({
+                        status: 'error',
+                        error: 'Conflict',
+                        message:`No es posible incrementar el quantity en más del stock.`
+                    })
                 }
-            })
-    
-            if(quantityError){
+        
+                const data = await cartService.incQuantity(cid, pid)
+        
+                if(!data){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(404).json({
+                        status: 'error',
+                        error: 'Not Found',
+                        message:`No existe un producto con id ${pid} en el carrito`
+                    })
+                }
+                        
                 res.setHeader('Content-Type','application/json')
-                return res.status(404).json({
-                    status: 'error',
-                    error:`No es posible incrementar el quantity en más del stock.`
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'Se incrementó el quantity en 1.',
+                    payload: data
                 })
-            }
-    
-            const data = await cartService.incQuantity(cid, pid)
-    
-            if(!data){
+            
+            }else{
                 res.setHeader('Content-Type','application/json')
-                return res.status(404).json({
+                return res.status(403).json({
                     status: 'error',
-                    error:`No existe un producto con id ${pid} en el carrito`
-                })
+                    error: 'Forbidden',
+                    message: 'No posee los permisos suficientes para realizar esta acción.',
+                }) 
             }
-                    
-            res.setHeader('Content-Type','application/json')
-            return res.status(200).json({
-                status: 'success',
-                payload: data
-            })
     
         } catch (error) {
             req.logger.error(error.message)
@@ -321,8 +402,8 @@ export class CartController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -331,42 +412,57 @@ export class CartController{
     static updateDecQuantityToProduct=async(req, res) => {
 
         const { cid, pid } = req.params
-    
+        const { user } = req
+
         try {
     
-            let cart = await cartService.getCartById(cid)
-            let quantityError = false
-            cart.products.forEach(i => {
-                if(i.product._id == pid){
-                    if(i.quantity === 1 ){
-                        quantityError = true
+            if(user.cart._id === cid){
+
+                let cart = await cartService.getCartById(cid)
+                let quantityError = false
+                cart.products.forEach(i => {
+                    if(i.product._id == pid){
+                        if(i.quantity === 1 ){
+                            quantityError = true
+                        }
                     }
+                })
+        
+                if(quantityError){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(409).json({
+                        status: 'error',
+                        error: 'Conflict',
+                        message:`No es posible decrementar el quantity en menos de 1.`
+                    })
                 }
-            })
-    
-            if(quantityError){
+        
+                const data = await cartService.decQuantity(cid, pid)
+        
+                if(!data){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(404).json({
+                        status: 'error',
+                        error: 'Not Found',
+                        message:`No existe un producto con id ${pid} en el carrito`
+                    })
+                }
+                        
                 res.setHeader('Content-Type','application/json')
-                return res.status(404).json({
-                    status: 'error',
-                    error:`No es posible decrementar el quantity en menos de 1.`
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'Se decrementó el quantity en 1.',
+                    payload: data
                 })
-            }
-    
-            const data = await cartService.decQuantity(cid, pid)
-    
-            if(!data){
+            
+            }else{
                 res.setHeader('Content-Type','application/json')
-                return res.status(404).json({
+                return res.status(403).json({
                     status: 'error',
-                    error:`No existe un producto con id ${pid} en el carrito`
-                })
+                    error: 'Forbidden',
+                    message: 'No posee los permisos suficientes para realizar esta acción.',
+                }) 
             }
-                    
-            res.setHeader('Content-Type','application/json')
-            return res.status(200).json({
-                status: 'success',
-                payload: data
-            })
     
         } catch (error) {
             req.logger.error(error.message)
@@ -374,8 +470,8 @@ export class CartController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -393,83 +489,94 @@ export class CartController{
 
         try {
 
-            let {products} = await cartService.getCartById(cid)
+            if(user.cart._id === cid){
 
-            for(const p of products){
-                if(p.product.stock >= p.quantity){
-                    let newStock = p.product.stock - p.quantity
+                let {products} = await cartService.getCartById(cid)
 
-                        // Resta del stock las cantidades compradas en cada producto
-                    await productService.updateProduct(p.product._id, {stock: newStock})
-                    productsInStock.push(p)
+                for(const p of products){
+                    if(p.product.stock >= p.quantity){
+                        let newStock = p.product.stock - p.quantity
 
-                    amount += p.quantity * p.product.price
-                    
-                }else{
-                    productsOutOfStock.push(p)
-                    newCart.push({product:p.product._id, quantity:p.quantity})
+                            // Resta del stock las cantidades compradas en cada producto
+                        await productService.updateProduct(p.product._id, {stock: newStock})
+                        productsInStock.push(p)
+
+                        amount += p.quantity * p.product.price
+                        
+                    }else{
+                        productsOutOfStock.push(p)
+                        newCart.push({product:p.product._id, quantity:p.quantity})
+                    }
                 }
-            }
 
-            productsInStock=productsInStock.map(product=>new ProductDTO(product))
-            productsOutOfStock=productsOutOfStock.map(product=>new ProductDTO(product))
+                productsInStock=productsInStock.map(product=>new ProductDTO(product))
+                productsOutOfStock=productsOutOfStock.map(product=>new ProductDTO(product))
 
-                //Genera ticket
-            let newTicket = null
-            if(productsInStock.length>0){
-                let code = user.cart._id+'-'+Math.random().toString(36).substring(2, 15).toUpperCase()
-                let purchaser = user.email
-                newTicket = await ticketService.createTicket({code, amount, purchaser})
-            }
+                    //Genera ticket
+                let newTicket = null
+                if(productsInStock.length>0){
+                    let code = user.cart._id+'-'+Math.random().toString(36).substring(2, 15).toUpperCase()
+                    let purchaser = user.email
+                    newTicket = await ticketService.createTicket({code, amount, purchaser})
+                }
 
-                // Actualiza el carrito con los productos que no se pudieron comprar.
-            await cartService.updateCart(cid, {products: newCart}) 
+                    // Actualiza el carrito con los productos que no se pudieron comprar.
+                await cartService.updateCart(cid, {products: newCart}) 
 
-                //genera cuerpo del email
-            const htmlConten = () => {
-                let html = `
-                        <p><b>Tickets de Compra:</b><p>
-                        <p>Operación: ${newTicket.code}</p>
-                        <p>Fecha y hora: ${newTicket.purchase_datetime}</p>
-                        <p>Total de la compra: $${newTicket.amount}</p>
-                        <p>Email: ${newTicket.purchaser}</p>
-                        </br>
-                        <p><strong>Productos comprados:</strong></p>
-                        <ul>${productsInStock.map(p => `<li>${p.title} - Código: ${p.code} - Precio: $${p.price} - Cantidad: ${p.quantity} - Subtotal: $${p.subTotal}</li>`).join('')}</ul>`
-                return html
-            }
+                    //genera cuerpo del email
+                const htmlConten = () => {
+                    let html = `
+                            <p><b>Tickets de Compra:</b><p>
+                            <p>Operación: ${newTicket.code}</p>
+                            <p>Fecha y hora: ${newTicket.purchase_datetime}</p>
+                            <p>Total de la compra: $${newTicket.amount}</p>
+                            <p>Email: ${newTicket.purchaser}</p>
+                            </br>
+                            <p><strong>Productos comprados:</strong></p>
+                            <ul>${productsInStock.map(p => `<li>${p.title} - Código: ${p.code} - Precio: $${p.price} - Cantidad: ${p.quantity} - Subtotal: $${p.subTotal}</li>`).join('')}</ul>`
+                    return html
+                }
 
-            res.setHeader('Content-Type','application/json')
+                res.setHeader('Content-Type','application/json')
 
-            if(productsInStock.length>0 && productsOutOfStock.length===0){
+                if(productsInStock.length>0 && productsOutOfStock.length===0){
 
-                email(user.email, 'Überwinden - Ticket de compra', htmlConten())
-                return res.status(200).json({
-                    status: 'success',
-                    message: 'La compra se realizó con éxito.',
-                    ticket: newTicket,
-                    confirmed: productsInStock
-                })
-            }
+                    email(user.email, 'Überwinden - Ticket de compra', htmlConten())
+                    return res.status(200).json({
+                        status: 'success',
+                        message: 'La compra se realizó con éxito.',
+                        ticket: newTicket,
+                        confirmed: productsInStock
+                    })
+                }
 
-            if(productsInStock.length>0 && productsOutOfStock.length>0){
+                if(productsInStock.length>0 && productsOutOfStock.length>0){
 
-                email(user.email, 'Überwinden - Ticket de compra', htmlConten())
-                return res.status(200).json({
-                    status: 'partial_success',
-                    message: 'La compra de algunos productos no se pudo concretar por falta de stock.',
-                    ticket: newTicket,
-                    confirmed: productsInStock,
-                    rejected: productsOutOfStock
-                })
-            }
+                    email(user.email, 'Überwinden - Ticket de compra', htmlConten())
+                    return res.status(200).json({
+                        status: 'partial_success',
+                        message: 'La compra de algunos productos no se pudo concretar por falta de stock.',
+                        ticket: newTicket,
+                        confirmed: productsInStock,
+                        rejected: productsOutOfStock
+                    })
+                }
 
-            if(productsInStock.length===0 && productsOutOfStock.length>0){
-                return res.status(200).json({
-                    status: 'fail',
-                    message: 'La compra no se pudo concretar por falta de stock.',
-                    rejected: productsOutOfStock
-                })
+                if(productsInStock.length===0 && productsOutOfStock.length>0){
+                    return res.status(200).json({
+                        status: 'fail',
+                        message: 'La compra no se pudo concretar por falta de stock.',
+                        rejected: productsOutOfStock
+                    })
+                }
+
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(403).json({
+                    status: 'error',
+                    error: 'Forbidden',
+                    message: 'No posee los permisos suficientes para realizar esta acción.',
+                }) 
             }
 
         } catch (error) {
@@ -478,8 +585,8 @@ export class CartController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }

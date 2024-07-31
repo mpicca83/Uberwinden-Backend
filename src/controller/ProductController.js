@@ -1,3 +1,4 @@
+import { request } from 'express'
 import { io } from '../app.js'
 import { config } from '../config/config.js'
 import { productService } from '../repositories/ProductService.js'
@@ -28,6 +29,7 @@ export class ProcuctController{
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
                 status: 'success',
+                message: 'Productos obtenidos con éxito.',
                 payload: datos.docs,
                 totalPages: datos.totalPages,
                 prevPage: datos.prevPage,
@@ -45,8 +47,8 @@ export class ProcuctController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -63,6 +65,7 @@ export class ProcuctController{
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
                 status: 'success',
+                message:'Producto obtenido con éxito.',
                 payload: data
             }) 
     
@@ -72,8 +75,8 @@ export class ProcuctController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -104,19 +107,20 @@ export class ProcuctController{
             const existe = await productService.getProductBy({code})
             if(existe){
                 res.setHeader('Content-Type','application/json');
-                return res.status(400).json({
+                return res.status(409).json({
                     status: 'error',
-                    error:`El code ${code} ya se encuentra registrado`
+                    error: 'Conflict',
+                    message:`El code ${code} ya se encuentra registrado`
                 })
             }
     
             const newProduct = await productService.addProduct(product)
             io.emit('productAdd',  newProduct )
-            
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
                 status: 'success',
-                payload: newProduct
+                message: 'El producto se ha creado con éxito.',
+                payload: newProduct,
             })
     
         } catch (error) {
@@ -125,8 +129,8 @@ export class ProcuctController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -147,9 +151,10 @@ export class ProcuctController{
                 
                 if(existe){
                     res.setHeader('Content-Type','application/json')
-                    return res.status(400).json({
+                    return res.status(409).json({
                         status: 'error',
-                        error:`El code ${objetUpdate.code} ya se encuentra registrado`
+                        error: 'Conflict',
+                        message:`El code ${objetUpdate.code} ya se encuentra registrado`
                     })
                 }
             }
@@ -169,8 +174,9 @@ export class ProcuctController{
                 })
             }else{
                 res.setHeader('Content-Type','application/json')
-                return res.status(400).json({
+                return res.status(403).json({
                     status: 'error',
+                    error: 'Forbidden',
                     message: 'No posee los permisos suficientes para realizar esta acción.'
                 })
             }
@@ -181,8 +187,8 @@ export class ProcuctController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }
@@ -210,8 +216,9 @@ export class ProcuctController{
                 })
             }else{
                 res.setHeader('Content-Type','application/json')
-                return res.status(400).json({
+                return res.status(403).json({
                     status: 'error',
+                    error: 'Forbidden',
                     message: 'No posee los permisos suficientes para realizar esta acción.'
                 })
             }
@@ -222,8 +229,8 @@ export class ProcuctController{
             return res.status(500).json(
                 {
                     status: 'error',
-                    error:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 }
             )
         }

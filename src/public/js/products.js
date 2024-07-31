@@ -22,7 +22,7 @@ const comprar=async(pid)=>{
 
         let resp = await response.json()
         
-        if (resp.error === 'El token ha expirado.' || resp.error === 'jwt expired') {
+        if (resp.message === 'El token ha expirado.' || resp.message === 'jwt expired') {
 
             Toastify({
                 text: "La sesión ha expirado...",
@@ -88,7 +88,7 @@ const ultima = async (dato)=>{
 const verifyToken = async (response) => {
     if (!response.ok) {
         const resp = await response.json();
-        if (resp.error === 'El token ha expirado.' || resp.error === 'jwt expired') {
+        if (resp.message === 'El token ha expirado.' || resp.message === 'jwt expired') {
 
             Toastify({
                 text: "La sesión ha expirado...",

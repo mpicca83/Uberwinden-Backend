@@ -22,6 +22,7 @@ export const validateUserRegistration = [
         } catch (error) {
             return res.status(400).json({ 
                 status: 'error',
+                error: 'Bad Request',
                 message: error.array() 
             })
         }
@@ -38,11 +39,21 @@ export const validateUserLogin = [
 
     (req, res, next) => {
         try {
+
+            if(req.cookies["cookieToken"]){
+                return res.status(409).json({ 
+                    status: 'error',
+                    error: 'Conflict',
+                    message: 'Hay una sesión activa. Debe cerrarla antes de iniciar una nueva.'
+                })
+            }
+            
             validationResult(req).throw()
             return next()
         } catch (error) {
             return res.status(400).json({ 
                 status: 'error',
+                error: 'Bad Request',
                 message: error.array()
             })
         }
@@ -62,6 +73,7 @@ export const validateForgot = [
         } catch (error) {
             return res.status(400).json({ 
                 status: 'error',
+                error: 'Bad Request',
                 message: error.array()
             })
         }
@@ -80,6 +92,7 @@ export const validateReset = [
         } catch (error) {
             return res.status(400).json({ 
                 status: 'error',
+                error: 'Bad Request',
                 message: error.array()
             })
         }
@@ -103,6 +116,7 @@ export const validateRol = [
         } catch (error) {
             return res.status(400).json({ 
                 status: 'error',
+                error: 'Bad Request',
                 message: error.array()
             })
         }

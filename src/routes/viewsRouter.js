@@ -32,9 +32,9 @@ router.get('/realtimeproducts', auth(['public']), async(req, res) => {
         return res.status(500).json(
             {
                 status: 'error',
-                error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                detail:`${error.message}`
-            }
+                error: 'Internal Server Error',
+                message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+        }
         )
     }
 })
@@ -52,9 +52,9 @@ router.get('/chat', passportCall("current"), auth(['user', 'premium']), async(re
         return res.status(500).json(
             {
                 status: 'error',
-                error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                detail:`${error.message}`
-            }
+                error: 'Internal Server Error',
+                message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+        }
         )
     }
 })
@@ -87,9 +87,9 @@ router.get('/products', auth(['public']),  async(req, res) => {
         return res.status(500).json(
             {
                 status: 'error',
-                error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                detail:`${error.message}`
-            }
+                error: 'Internal Server Error',
+                message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+        }
         )
     }
 })
@@ -110,9 +110,9 @@ router.get('/carts/:cid', passportCall("current"), auth(['user', 'premium', 'adm
         return res.status(500).json(
             {
                 status: 'error',
-                error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                detail:`${error.message}`
-            }
+                error: 'Internal Server Error',
+                message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+        }
         )
     }
 })
@@ -150,9 +150,9 @@ router.get('/mockingproducts', auth(['public']),  async(req, res) => {
         return res.status(500).json(
             {
                 status: 'error',
-                error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                detail:`${error.message}`
-            }
+                error: 'Internal Server Error',
+                message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+        }
         )
     }
 })

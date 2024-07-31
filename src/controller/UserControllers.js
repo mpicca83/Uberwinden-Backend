@@ -19,6 +19,7 @@ export class UserController{
                 res.setHeader('Content-Type','application/json')
                 return res.status(401).json({
                     status: 'error',
+                    error: 'Unauthorized',
                     message: "El email ingresado no es válido."
                 })
             }
@@ -48,8 +49,8 @@ export class UserController{
             return res.status(500).json(
                 {
                     status: 'error',
+                    error: 'Internal Server Error',
                     message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
                 }
             )
         }
@@ -73,6 +74,7 @@ export class UserController{
             res.setHeader('Content-Type','application/json')
             return res.status(400).json({
                 status: 'error',
+                error: 'Bad Request',
                 message: 'Token inválido.'
             })
         }
@@ -81,6 +83,7 @@ export class UserController{
             res.setHeader('Content-Type','application/json')
             return res.status(401).json({
                 status: 'error',
+                error: 'Unauthorized',
                 message: 'El token ha expirado. Debe generar uno nuevo.'
             })
         }
@@ -93,6 +96,7 @@ export class UserController{
                 res.setHeader('Content-Type','application/json')
                 return res.status(409).json({
                     status: 'error',
+                    error: 'Conflict',
                     message: 'Contraseña inválida, debe ingresar una distinta a las anteriores.'
                 })
             }
@@ -111,6 +115,7 @@ export class UserController{
                 res.setHeader('Content-Type','application/json')
                 return res.status(500).json({
                     status: 'error',
+                    error: 'Internal Server Error',
                     message: 'No se pudo restablecer. Por favor volver a intentar.',
                 })
             }
@@ -121,8 +126,8 @@ export class UserController{
             return res.status(500).json(
                 {
                     status: 'error',
+                    error: 'Internal Server Error',
                     message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
                 }
             )
         }
@@ -146,21 +151,21 @@ export class UserController{
                 })
             }else{
                 res.setHeader('Content-Type','application/json')
-                return res.status(400).json({
+                return res.status(500).json({
                     status: 'error',
+                    error: 'Internal Server Error',
                     message: 'No se pudo actualizar el rol, por favor vuelva a intentar.',
                 })
             }
             
- 
         } catch (error) {
             req.logger.error(error.message)
             res.setHeader('Content-Type','application/json')
             return res.status(500).json(
                 {
                     status: 'error',
+                    error: 'Internal Server Error',
                     message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
-                    detail:`${error.message}`
                 }
             )
         }

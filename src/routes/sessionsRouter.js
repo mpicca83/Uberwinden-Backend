@@ -26,6 +26,7 @@ router.post('/login', validateUserLogin, passportCall('login'), auth(['public'])
     let {user} = req
 
     let token = jwt.sign(user, SECRET, {expiresIn: "1h"})
+
     res.cookie("cookieToken", token, { httpOnly: true })
 
     //req.session.user=user //para sessions

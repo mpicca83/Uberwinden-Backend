@@ -12,15 +12,15 @@ router.post('/', auth(['public']), CartController.addCart)
 
 router.get('/:cid', passportCall('current'), auth(['user', 'premium', 'admin']), validateObjectId, validateExistence, CartController.getCart)
 
-router.post('/:cid/product/:pid', passportCall('current'), auth(['user', 'premium']), validateObjectId, validateExistence, CartController.addProductToCart)
-
-router.delete('/:cid/products/:pid', passportCall('current'), auth(['user', 'premium']), validateObjectId, validateExistence, CartController.deleteProductToCart)
+router.put('/:cid', passportCall('current'), auth(['user', 'premium']), validateObjectId, validateExistence, validateCart, CartController.updateCart)
 
 router.delete('/:cid', passportCall('current'), auth(['user', 'premium']), validateObjectId, validateExistence, CartController.deleteProductsToCart)
 
+router.post('/:cid/product/:pid', passportCall('current'), auth(['user', 'premium']), validateObjectId, validateExistence, CartController.addProductToCart)
+
 router.put('/:cid/products/:pid', passportCall('current'), auth(['user', 'premium']), validateObjectId, validateExistence, CartController.updateQuantityToProduct)
 
-router.put('/:cid', passportCall('current'), auth(['user', 'premium']), validateObjectId, validateExistence, validateCart, CartController.updateCart)
+router.delete('/:cid/products/:pid', passportCall('current'), auth(['user', 'premium']), validateObjectId, validateExistence, CartController.deleteProductToCart)
 
 router.put('/incQuantity/:cid/products/:pid', passportCall('current'), auth(['user', 'premium']), validateObjectId, validateExistence, CartController.updateIncQuantityToProduct)
 

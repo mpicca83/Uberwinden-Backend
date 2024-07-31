@@ -24,7 +24,11 @@ export const auth=(roles=[])=>{
 
             if(expired){
                 res.clearCookie('cookieToken')
-                return res.status(401).json({error: 'El token ha expirado.'})
+                return res.status(401).json({
+                    status: 'error',
+                    error: 'Unauthorized',
+                    message: 'El token ha expirado.'
+                })
             }
 
             if(roles.includes("public")){
@@ -32,23 +36,44 @@ export const auth=(roles=[])=>{
             }
 
             if(!req.user){
+
                 res.setHeader('Content-Type','application/json');
-                return res.status(401).json({error:`No hay usuarios autenticados`})
+                return res.status(401).json({
+                    status: 'error',
+                    error: 'Unauthorized',
+                    message: 'No hay usuarios autenticados'
+                })
+
             }else if(!req.user.rol){
+
                 res.setHeader('Content-Type','application/json');
-                return res.status(401).json({error:`El Usuario no tiene un rol asignado`})
+                return res.status(401).json({
+                    status: 'error',
+                    error: 'Unauthorized',
+                    message: 'El Usuario no tiene un rol asignado'
+                })
             }
 
             if(!roles.includes(req.user.rol.toLowerCase())){
-                res.setHeader('Content-Type','application/json');
-                return res.status(403).json({error:`Privilegios insuficientes para acceder.`})
+
+                res.setHeader('Content-Type','application/json')
+                return res.status(403).json({
+                    status: 'error',
+                    error: 'Forbidden',
+                    message: 'Privilegios insuficientes para acceder.'
+                })
             }
 
             return next()
                 
         }catch (error) {
+            
             req.logger.error(error);
-            return res.status(500).json({ error: 'Error interno del servidor' });
+            return res.status(500).json({
+                status: 'error',
+                error: 'Internal Server Error',
+                message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+            })
         }
     }
 }

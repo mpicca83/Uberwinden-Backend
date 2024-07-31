@@ -37,6 +37,7 @@ export class MockingController{
         res.setHeader('Content-Type','application/json')
         return res.status(200).json({
             status: 'success',
+            message: 'Los productos Mocking se generaron con éxito.',
             payload: products,
         })
     }

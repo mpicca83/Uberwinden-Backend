@@ -16,6 +16,7 @@ export const validateExistence = async (req, res, next) => {
                 
                 return res.status(404).json({
                     status: 'error',
+                    error: 'Not Found',
                     message: `No existe un carrito con id ${cid}`
                 })
             }
@@ -26,6 +27,7 @@ export const validateExistence = async (req, res, next) => {
             if (!product) {
                 return res.status(404).json({
                     status: 'error',
+                    error: 'Not Found',
                     message: `No existe un producto con id ${pid}`
                 })
             }
@@ -36,6 +38,7 @@ export const validateExistence = async (req, res, next) => {
             if (!user) {
                 return res.status(404).json({
                     status: 'error',
+                    error: 'Not Found',
                     message: `No existe un usuario con id ${uid}`
                 })
             }
@@ -47,18 +50,11 @@ export const validateExistence = async (req, res, next) => {
         return res.status(500).json(
             {
                 status: 'error',
-                error:'Error inesperado en el servidor - Intente más tarde o contacte a su administrador',
-            }
+                error: 'Internal Server Error',
+                message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+        }
         )
     }
-
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //     return res.status(400).json({ 
-    //         status: 'error',
-    //         errors: errors.array() 
-    //     })
-    // }
 
     next()
 }

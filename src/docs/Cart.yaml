@@ -1,0 +1,691 @@
+paths:
+  /api/cart:
+    post:
+      summary: Crea un nuevo carrito
+      description: Crea un nuevo carrito en la base de datos.
+      tags:
+        - Cart
+      responses:
+        200:
+          description: Carrito creado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Carrito creado con éxito.
+                  payload:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 60d0fe4f5311236168a109ca
+                      products:
+                        type: array
+                        example: []
+                      createdAt:
+                        type: string
+                        example: 2024-07-25T23:49:18.016Z
+                      updatedAt:
+                        type: string
+                        example: 2024-07-25T23:49:18.016Z
+                      __v:
+                        type: number
+                        example: 0
+        500:
+          $ref: '#/components/responses/500'
+  /api/cart/{cid}:
+    get:
+      summary: Obtiene un carrito especifico.
+      description: |
+        Devuelve un carrito especifico según el _id. 
+        
+        **Roles autorizados**: user, premium y admin
+      tags:
+        - Cart
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: ID del carrito
+      responses:
+        200:
+          description: Carrito obtenido con éxito.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Carrito obtenido con éxito.
+                  payload:
+                    $ref: '#components/schemas/CartPopulate'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      summary: Modifica un carrito especifico.
+      description: |
+        Modifica un carrito especifico según el _id. 
+        
+        El carrito debe ser propio del usuario.
+        
+        **Roles autorizados**: user y premium
+      tags:
+        - Cart
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: ID del carrito
+      requestBody:
+        description: Es requerido el nuevo carrito de forma completa. _ID del producto y su respectivo quantity.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                products:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      product:
+                        type: string
+                        example: 60d0fe4f5311236168a109cc
+                      quantity:
+                        type: integer
+                        example: 2
+      responses:
+        200:
+          description: Carrito modificado con éxito.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Carrito modificado con éxito.
+                  payload:
+                    $ref: '#components/schemas/Cart'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    delete:
+      summary: Elimina todos los productos de un carrito
+      description: |
+        Elimina todos los productos de un carrito específico según el _id.
+
+        El carrito debe ser propio del usuario.
+
+        **Roles autorizados**: user y premium
+      tags:
+        - Cart
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: ID del carrito
+      responses:
+        200:
+          description: Productos eliminados del carrito con éxito.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Productos eliminados del carrito con éxito.
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  /api/cart/{cid}/product/{pid}:
+    post:
+      summary: Agrega un producto al carrito
+      description: |
+        Agrega un producto al carrito. 
+        
+        El carrito debe ser propio del usuario.
+
+        **Roles autorizados**: user y premium
+      tags:
+        - Cart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del carrito
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del producto
+      responses:
+        200:
+          description: Producto agregado al carrito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Producto agregado al carrito...!!!
+                  payload:
+                    $ref: '#/components/schemas/Cart'
+        403:
+          $ref: '#/components/responses/403'
+        409:
+          description: No es posible incrementar en más del stock.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  error:
+                    type: string
+                    example: Conflict
+                  message:
+                    type: string
+                    example: No es posible incrementar en más del stock.
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      summary: Modifica la cantidad de un producto agregado en carrito.
+      description: |
+        Modifica la cantidad de un producto según el ID agregado en un carrito especifico también según su ID. 
+
+        El carrito debe ser propio del usuario.
+        
+        **Roles autorizados**: user y premium
+      tags:
+        - Cart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del carrito
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del producto
+      requestBody:
+        description: Es requerido un objeto con la nueva cantidad (quantity).
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  example: 2
+      responses:
+        200:
+          description: Quantity actualizado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: La actualización de la cantidad en el producto con id 663426a973e91c0cf32a400f se realizó correctamente
+                  payload:
+                    $ref: '#components/schemas/Cart'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        409:
+          description: Quantity debe ser mayor a 0.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  error:
+                    type: string
+                    example: Conflict
+                  message:
+                    type: string
+                    example: Quantity debe ser mayor a 0.
+        500:
+          $ref: '#/components/responses/500'
+    delete:
+      summary: Elimina un producto de un carrito
+      description: |
+        Elimina un producto seleccionado de un carrito específico según el _id.
+
+        El carrito debe ser propio del usuario.
+
+        **Roles autorizados**: user y premium
+      tags:
+        - Cart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del carrito
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del producto
+      responses:
+        200:
+          description: Producto eliminado del carrito.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Producto eliminado correctamente.
+                  payload:
+                    $ref: '#components/schemas/Cart'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+  /api/cart/incQuantity/{cid}/products/{pid}:
+    put:
+      summary: Incrementa la cantidad del un producto en 1 unidad.
+      description: |
+        Incrementa en 1 unidad el quantity de un producto seleccionado por su ID en el carrito detallado. 
+
+        El carrito debe ser propio del usuario.
+        
+        **Roles autorizados**: user y premium
+      tags:
+        - Cart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del carrito
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del producto
+      responses:
+        200:
+          description: Se incrementó el quantity en 1.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Se incrementó el quantity en 1.
+                  payload:
+                    $ref: '#components/schemas/Cart'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        409:
+          description: No es posible incrementar el quantity en más del stock.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  error:
+                    type: string
+                    example: Conflict
+                  message:
+                    type: string
+                    example: No es posible incrementar el quantity en más del stock.
+        500:
+          $ref: '#/components/responses/500'
+  /api/cart/decQuantity/{cid}/products/{pid}:
+    put:
+      summary: Decrementa la cantidad del un producto en 1 unidad.
+      description: |
+        Decrementa en 1 unidad el quantity de un producto seleccionado por su ID en el carrito detallado. 
+
+        El carrito debe ser propio del usuario.
+        
+        **Roles autorizados**: user y premium
+      tags:
+        - Cart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del carrito
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del producto
+      responses:
+        200:
+          description: Se decrementó el quantity en 1.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Se decrementó el quantity en 1.
+                  payload:
+                    $ref: '#components/schemas/Cart'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        409:
+          description: No es posible decrementar el quantity en menos de 1.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  error:
+                    type: string
+                    example: Conflict
+                  message:
+                    type: string
+                    example: No es posible decrementar el quantity en menos de 1.
+        500:
+          $ref: '#/components/responses/500'
+  /api/cart/{cid}/purchase:
+    post:
+      summary: Realiza la compra de los productos en el carrito.
+      description: |
+        Realiza la compra de los productos agregados al carrito. 
+        
+        En los productos que tienen stock disponible se efectiviza la compra y se eliminan del carrito. 
+        
+        Los productos que no tienen stock suficiente quedan en el carrito.
+
+        Se muestra el detalle de la operación y se envía por email el ticket.
+
+        El carrito debe ser propio del usuario.
+        
+        **Roles autorizados**: user y premium
+      tags:
+        - Cart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del carrito
+      responses:
+        200:
+          description: Operación realizada con éxito
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      status:
+                        type: string
+                        example: success
+                      message:
+                        type: string
+                        example: La compra se realizó con éxito.
+                      ticket:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 66a9a3306fce3a4474683e8f
+                          code:
+                            type: string
+                            example: 665d3e4a527b22791687ed52-ZEZUBV7RMD
+                          amount:
+                            type: number
+                            example: 26000
+                          purchaser:
+                            type: string
+                            example: premium@example.com
+                          purchase_datetime:
+                            type: string
+                            format: date-time
+                          createdAt:
+                            type: string 
+                            format: date-time
+                          updatedAt:
+                            type: string 
+                            format: date-time
+                          __v:
+                            type: number 
+                            example: 0
+                      confirmed:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 66384f17508c6a9a9b82a703
+                            title:
+                              type: string
+                              example: "Titulo del producto"
+                            code:
+                              type: string
+                              example: "ABC123"
+                            price:
+                              type: number
+                              example: 6500
+                            quantity:
+                              type: number 
+                              example: 4
+                            subTotal:
+                              type: number 
+                              example: 26000
+                  - type: object
+                    properties:
+                      status:
+                        type: string
+                        example: partial_success
+                      message:
+                        type: string
+                        example: La compra de algunos productos no se pudo concretar por falta de stock.
+                      ticket:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 66a9a3306fce3a4474683e8f
+                          code:
+                            type: string
+                            example: 665d3e4a527b22791687ed52-ZEZUBV7RMD
+                          amount:
+                            type: number
+                            example: 26000
+                          purchaser:
+                            type: string
+                            example: premium@example.com
+                          purchase_datetime:
+                            type: string
+                            format: date-time
+                          createdAt:
+                            type: string 
+                            example: date-time
+                          updatedAt:
+                            type: string 
+                            example: date-time
+                          __v:
+                            type: number 
+                            example: 0
+                      confirmed:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 66384f17508c6a9a9b82a703
+                            title:
+                              type: string
+                              example: "Titulo del producto"
+                            code:
+                              type: string
+                              example: "ABC123"
+                            price:
+                              type: number
+                              example: 6500
+                            quantity:
+                              type: number 
+                              example: 4
+                            subTotal:
+                              type: number 
+                              example: 26000
+                      rejected:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 66a5813c30a1f6d21cea0010
+                            title:
+                              type: string
+                              example: "Titulo del producto"
+                            code:
+                              type: string
+                              example: "ABC123"
+                            price:
+                              type: number
+                              example: 7000
+                            quantity:
+                              type: number 
+                              example: 1
+                            subTotal:
+                              type: number 
+                              example: 7000
+                  - type: object
+                    properties:
+                      status:
+                        type: string
+                        example: fail
+                      message:
+                        type: string
+                        example: La compra no se pudo concretar por falta de stock.
+                      rejected:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 66a5813c30a1f6d21cea0010
+                            title:
+                              type: string
+                              example: "Titulo del producto"
+                            code:
+                              type: string
+                              example: "ABC123"
+                            price:
+                              type: number
+                              example: 7000
+                            quantity:
+                              type: number 
+                              example: 1
+                            subTotal:
+                              type: number 
+                              example: 7000
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+

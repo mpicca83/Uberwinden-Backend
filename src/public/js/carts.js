@@ -48,7 +48,7 @@ const dec = async(pid)=>{
         }, 500);
     }
 
-    if(respuesta.status===404){
+    if(respuesta.status===409){
         
         Toastify({
             text: "No es posible disminuir en menos de 1.",
@@ -84,7 +84,7 @@ const inc = async(pid)=>{
         }, 500);
     }
 
-    if(respuesta.status===404){
+    if(respuesta.status===409){
         
         Toastify({
             text: "No es posible incrementar en más del stock.",
@@ -177,7 +177,7 @@ const comprar = async() => {
 const verifyToken = async (response) => {
     if (!response.ok) {
         const resp = await response.json();
-        if (resp.error === 'El token ha expirado.' || resp.error === 'jwt expired') {
+        if (resp.message === 'El token ha expirado.' || resp.message === 'jwt expired') {
 
             Toastify({
                 text: "La sesión ha expirado...",
