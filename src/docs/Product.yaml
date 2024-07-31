@@ -11,7 +11,7 @@ paths:
       tags:
         - Products
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -162,7 +162,7 @@ paths:
       tags:
         - Products
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - in: path
           name: pid
@@ -208,7 +208,7 @@ paths:
       tags:
         - Products
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - in: path
           name: pid

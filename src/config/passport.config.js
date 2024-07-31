@@ -10,12 +10,16 @@ import { cartService } from "../repositories/CartService.js"
 const { SECRET, CLIENT_ID_GITHUB, CLIENT_SECRET_GITHUB, CALLBACK_URL_GITHUB } = config
 
 const findToken=(req)=>{
-    let token=null
 
+    let token=null
+    
     if(req.cookies["cookieToken"]){
         token=req.cookies["cookieToken"]
     }
-
+    if(req.headers.authorization){
+        let part=req.headers.authorization.split(' ')
+        token = part[1]
+    }
     return token
 }
 

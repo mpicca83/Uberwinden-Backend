@@ -49,7 +49,7 @@ paths:
       tags:
         - Cart
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - in: path
           name: cid
@@ -86,7 +86,7 @@ paths:
       tags:
         - Cart
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - in: path
           name: cid
@@ -144,7 +144,7 @@ paths:
       tags:
         - Cart
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - in: path
           name: cid
@@ -182,7 +182,7 @@ paths:
       tags:
         - Cart
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - name: cid
           in: path
@@ -243,7 +243,7 @@ paths:
       tags:
         - Cart
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - name: cid
           in: path
@@ -317,7 +317,7 @@ paths:
       tags:
         - Cart
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - name: cid
           in: path
@@ -365,7 +365,7 @@ paths:
       tags:
         - Cart
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - name: cid
           in: path
@@ -429,7 +429,7 @@ paths:
       tags:
         - Cart
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - name: cid
           in: path
@@ -499,7 +499,7 @@ paths:
       tags:
         - Cart
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - name: cid
           in: path
