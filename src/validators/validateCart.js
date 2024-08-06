@@ -29,10 +29,17 @@ export const validateCart = [
         .notEmpty().withMessage('El campo "quantity" en cada elemento de "products" es requerido.')
         .isNumeric().withMessage('El campo "quantity" debe ser numérico.')
         .toInt()
-        .custom((value) => {
+        .custom(async (value, { req }) => {
             if (value < 1) {
                 throw new Error('El campo "quantity" debe ser un número mayor que 0.')
             }
+            for (const item of req.body.products) {
+                let product = await productService.getProductBy({ _id: item.product })
+                if (item.quantity>product.stock) {
+                    throw new Error(`El stock del product:${item.product} no es suficiente.`)
+                }
+            }
+
             return true
         }),
 
@@ -41,7 +48,6 @@ export const validateCart = [
             validationResult(req).throw()
             return next()
         } catch (error) {
-            req.logger.error(error.message)
             return res.status(400).json({ 
                 status: 'error',
                 error: 'Bad Request',

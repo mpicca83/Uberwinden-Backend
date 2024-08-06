@@ -31,5 +31,8 @@ export const config={
     PORT_NODEMAILER: process.env.PORT_NODEMAILER,
     USER_NODEMAILER: process.env.USER_NODEMAILER,
     PASS_NODEMAILER: process.env.PASS_NODEMAILER,
-    FROM_NODEMAILER: process.env.FROM_NODEMAILER
+    FROM_NODEMAILER: process.env.FROM_NODEMAILER,
+    EMAIL_ADMIN: process.env.EMAIL_ADMIN,
+    PASSWORD_ADMIN: process.env.PASSWORD_ADMIN
+
 }

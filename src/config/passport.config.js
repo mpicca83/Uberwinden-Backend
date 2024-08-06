@@ -38,12 +38,12 @@ export const initPassport = () => {
 
                     let {first_name, last_name, age}=req.body
                     if(!first_name){
-                        return done(null, false, {message:"Debe ingresar su Nombre."})
+                        return done(null, false, {statusCode: 400, type: 'Bad Request', message:"Debe ingresar su Nombre."})
                     }
                     
                     const validateEmail = await userService.getUserBy({email:username})
                     if(validateEmail){
-                        return done(null, false, {message:"El email ingresado ya se encuentra registrado."})
+                        return done(null, false, {statusCode: 409, type: 'Conflict', message:"El email ingresado ya se encuentra registrado."})
                     }
 
                     password = generaHash(password)
@@ -80,11 +80,11 @@ export const initPassport = () => {
 
                     let user = await userService.getUserBy({email:username})
                     if(!user){
-                        return done(null, false, {message:"El email ingresado no es válido."})
+                        return done(null, false, {statusCode: 404, type: 'Not Found', message:"El email ingresado no es válido."})
                     }
 
                     if(!validaPassword(password, user.password)){
-                        return done(null, false, {message:"La contraseña ingresada no es válida."})    
+                        return done(null, false, {statusCode: 401, type: 'Unauthorized', message:"La contraseña ingresada no es válida."})    
                     }
                     
                     delete user.password
@@ -111,12 +111,12 @@ export const initPassport = () => {
 
                     let email = profile._json.email
                     if(!email){
-                        return done(null, false, {message:"El login fue rechazado por no tener registrado el email."})
+                        return done(null, false, {statusCode: 400, type: 'Bad Request', message:"El login fue rechazado por no tener registrado el email."})
                     }
 
                     let name = profile._json.name
                     if(!name){
-                        return done(null, false, {message:"El login fue rechazado por no tener registrado el nombre."})
+                        return done(null, false, {statusCode: 400, type: 'Bad Request', message:"El login fue rechazado por no tener registrado el nombre."})
                     }
 
                     let user = await userService.getUserBy({email})

@@ -1,7 +1,7 @@
 
 # Programación Backend
 
-Este es un proyecto para la entrega del desafío "Documentación de API" en el curso de Programación Backend
+Este es un proyecto para la entrega del desafío "Módulos de Testing" en el curso de Programación Backend
 
 
 **Para iniciar en "Modo Development"**
@@ -15,6 +15,10 @@ Este es un proyecto para la entrega del desafío "Documentación de API" en el c
 ``` npm run dev -- -m prod ```
 <br>
 ``` npm start -- -m prod ```
+
+**Para iniciar el "Testing"**
+
+*Deve levantar el servidor en modo dev y luego en otra terminal ingresar:* ``` npm test ```
 
 **Para realizar el test de los log debe acceder a la siguientes rutas:**
 

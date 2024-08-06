@@ -246,6 +246,17 @@ export class CartController{
                     })
                 }
 
+                const prod = await productService.getProductBy({_id:pid})
+
+                if(!prod || quantity > prod.stock){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(409).json({
+                        status: 'error',
+                        error: 'Conflict',
+                        message:`Quantity debe ser menor o igual al stock disponible (${prod.stock}).`
+                    })
+                }
+
                 const data = await cartService.updateQuantityToProduct(cid, pid, quantity)
         
                 if(!data){
@@ -325,8 +336,6 @@ export class CartController{
                 })               
             }
 
-
-    
         } catch (error) {
             req.logger.error(error.message)
             res.setHeader('Content-Type','application/json')
@@ -492,6 +501,15 @@ export class CartController{
             if(user.cart._id === cid){
 
                 let {products} = await cartService.getCartById(cid)
+
+                if(products.length === 0){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(400).json({
+                        status: 'error',
+                        error: 'Bad Request',
+                        message: 'El carrito se encuentra vacío.',
+                    }) 
+                }
 
                 for(const p of products){
                     if(p.product.stock >= p.quantity){

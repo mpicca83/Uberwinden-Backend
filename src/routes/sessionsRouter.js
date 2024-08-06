@@ -12,7 +12,6 @@ export const router=Router()
 const { SECRET } = config
 
 router.post('/register', validateUserRegistration, passportCall('register'), auth(['public']), async(req, res) => {
-    
     res.setHeader('Content-Type','application/json')
     return res.status(201).json({
         status: 'success',

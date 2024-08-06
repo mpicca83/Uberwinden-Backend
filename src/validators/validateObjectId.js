@@ -20,7 +20,6 @@ export const validateObjectId = [
             validationResult(req).throw()
             return next()
         } catch (error) {
-            req.logger.error(error.message)
             return res.status(400).json({ 
                 status: 'error',
                 error: 'Bad Request',

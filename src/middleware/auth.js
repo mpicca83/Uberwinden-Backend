@@ -67,7 +67,6 @@ export const auth=(roles=[])=>{
             return next()
                 
         }catch (error) {
-            
             req.logger.error(error);
             return res.status(500).json({
                 status: 'error',
