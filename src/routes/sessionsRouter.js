@@ -6,6 +6,8 @@ import { auth } from '../middleware/auth.js'
 import { config } from '../config/config.js'
 import { UserDTO } from '../dto/UserDTO.js'
 import { UserController } from '../controller/UserControllers.js'
+import { userService } from "../repositories/UserService.js"
+
 
 export const router=Router()
 
@@ -42,7 +44,18 @@ router.post('/login', validateUserLogin, passportCall('login'), auth(['public'])
 router.get('/logout', async(req, res) => {
 
     let {web} = req.query
-
+    let user = null
+    
+    let token=req.cookies["cookieToken"]
+    if(token){
+        jwt.verify(token, SECRET, (err, decoded) => {
+            user = decoded;
+        })
+    }
+    if(user){
+        await userService.updateUser(user._id, { last_connection: Date.now() })
+    }
+    
     res.clearCookie('cookieToken')
 
         //para sessions

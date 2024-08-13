@@ -1,7 +1,7 @@
 
 # Programación Backend
 
-Este es un proyecto para la entrega del desafío "Módulos de Testing" en el curso de Programación Backend
+Este es un proyecto para la "Cuarta Práctica Integradora" en el curso de Programación Backend
 
 
 **Para iniciar en "Modo Development"**

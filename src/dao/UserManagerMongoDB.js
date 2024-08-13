@@ -12,7 +12,7 @@ export class UserManagerMongoDB {
     }
 
     async updateUser(id, objetUpdate){
-        return await usersModel.findByIdAndUpdate(id, objetUpdate, {runValidators: true, returnDocument: "after"})
+        return await usersModel.findByIdAndUpdate(id, objetUpdate, {runValidators: true, returnDocument: "after"}).populate("cart").lean()
     }
 }
 

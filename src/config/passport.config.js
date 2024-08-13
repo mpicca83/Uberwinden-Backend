@@ -86,8 +86,10 @@ export const initPassport = () => {
                     if(!validaPassword(password, user.password)){
                         return done(null, false, {statusCode: 401, type: 'Unauthorized', message:"La contraseña ingresada no es válida."})    
                     }
-                    
+
+                    user = await userService.updateUser(user._id, { last_connection: Date.now() })
                     delete user.password
+
                     return done(null, user)
 
                 } catch (error) {
@@ -129,6 +131,10 @@ export const initPassport = () => {
                         })
                         user = await userService.getUserBy({email})
                     }
+
+                    user = await userService.updateUser(user._id, { last_connection: Date.now() })
+                    delete user.password
+
                     return done(null, user)
 
                 } catch (error) {

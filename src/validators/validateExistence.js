@@ -1,4 +1,3 @@
-import { validationResult } from 'express-validator'
 import { cartService } from '../repositories/CartService.js'
 import { productService } from '../repositories/ProductService.js'
 import { userService } from '../repositories/UserService.js'

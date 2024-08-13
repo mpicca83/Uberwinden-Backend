@@ -137,9 +137,23 @@ export class UserController{
 
         const { uid } = req.params
         const { rol } = req.body
-
+        
         try {
             
+            const {documents} = await userService.getUserBy({_id: uid})
+
+            let identification = documents.find(data => data.name === 'identification')
+            let addressProof = documents.find(data => data.name === 'addressProof')
+            let bankStatement = documents.find(data => data.name === 'bankStatement')
+            
+            if( rol === 'premium' && ( !identification || !addressProof || !bankStatement )){
+                res.setHeader('Content-Type','application/json')
+                return res.status(200).json({
+                    status: 'error',
+                    message: `El usuario con id ${uid} no ha terminado de procesar su documentación.`,
+                })
+            }
+
             const updateUser = await userService.updateUser(uid, { rol: rol })
 
             if(updateUser){
@@ -155,6 +169,84 @@ export class UserController{
                     status: 'error',
                     error: 'Internal Server Error',
                     message: 'No se pudo actualizar el rol, por favor vuelva a intentar.',
+                })
+            }
+            
+        } catch (error) {
+            req.logger.error(error.message)
+            res.setHeader('Content-Type','application/json')
+            return res.status(500).json(
+                {
+                    status: 'error',
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+                }
+            )
+        }
+    }
+
+    static updateDocuments = async(req, res) => {
+
+        const { uid } = req.params
+        const { _id } = req.user
+
+        try {
+
+            if(_id == uid){
+
+                let {documents} = await userService.getUserBy({ _id: uid })
+                const newDocuments = req.files
+                
+                if(!newDocuments){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(400).json({
+                        status: 'error',
+                        error: 'Bad Request',
+                        message: 'No se cargó ningún archivo. Por favor, suba al menos un documento.',
+                    })
+                }
+                
+                const updateDocumentArray = (documentType, newFiles) => {
+
+                    const updatedDocs = newFiles.map(file => ({
+                        name: documentType,
+                        reference: file.destination + '/' + file.filename, 
+                    }))
+
+                    if(documents){
+                        const existingDocs = documents.filter(doc => doc.name !== documentType);
+                    
+                        return [...existingDocs, ...updatedDocs]
+                    }else{
+                        return [...updatedDocs]
+                    }
+
+                }
+        
+                if (newDocuments['identification']) {
+                    documents = updateDocumentArray('identification', newDocuments['identification'])
+                }
+                if (newDocuments['addressProof']) {
+                    documents = updateDocumentArray('addressProof', newDocuments['addressProof'])
+                }
+                if (newDocuments['bankStatement']) {
+                    documents = updateDocumentArray('bankStatement', newDocuments['bankStatement'])
+                }
+        
+                const updateDocument = await userService.updateUser(uid, { documents: documents })
+                
+                res.status(200).json({
+                    status: 'success',
+                    message: 'Los documentos fueron cargados exitosamente.',
+                    documents: updateDocument.documents
+                })
+
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(403).json({
+                    status: 'error',
+                    error: 'Forbidden',
+                    message: 'No posee los permisos suficientes para realizar esta acción.',
                 })
             }
             

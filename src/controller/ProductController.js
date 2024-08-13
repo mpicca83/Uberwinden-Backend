@@ -1,4 +1,3 @@
-import { request } from 'express'
 import { io } from '../app.js'
 import { config } from '../config/config.js'
 import { productService } from '../repositories/ProductService.js'
