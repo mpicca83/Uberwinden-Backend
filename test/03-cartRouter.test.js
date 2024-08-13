@@ -392,9 +392,7 @@ describe("Proyecto Ecommerce:", function(){
             .set('Authorization', `Bearer ${tokenAdmin}`)
             await request.delete(`/api/products/${productId2}`)
             .set('Authorization', `Bearer ${tokenAdmin}`)
-            await request.delete(`/api/users/delete/${idUser}`)
-            .set('Authorization', `Bearer ${tokenAdmin}`)
-
+            await mongoose.connection.collection("users").deleteMany({email:"user@test.com"})
             await mongoose.connection.collection("tickets").deleteMany({purchaser:"user@test.com"})
         })
 
