@@ -137,14 +137,21 @@ export class UserController{
 
         const { uid } = req.params
         const { rol } = req.body
+
+        let identification = null
+        let addressProof = null
+        let bankStatement = null
+
         
         try {
             
             const {documents} = await userService.getUserBy({_id: uid})
 
-            let identification = documents.find(data => data.name === 'identification')
-            let addressProof = documents.find(data => data.name === 'addressProof')
-            let bankStatement = documents.find(data => data.name === 'bankStatement')
+            if(documents){
+                identification = documents.find(data => data.name === 'identification')
+                addressProof = documents.find(data => data.name === 'addressProof')
+                bankStatement = documents.find(data => data.name === 'bankStatement')
+            }
             
             if( rol === 'premium' && ( !identification || !addressProof || !bankStatement )){
                 res.setHeader('Content-Type','application/json')
