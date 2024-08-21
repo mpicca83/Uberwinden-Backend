@@ -4,7 +4,7 @@ import { validateObjectId } from '../validators/validateObjectId.js'
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
 import { passportCall } from '../utils.js'
-import { CartController } from '../controller/cartController.js'
+import { CartController } from '../controller/CartController.js'
 
 export const router=Router()
 
