@@ -12,7 +12,7 @@ export const router=Router()
 router.get('/', auth(['public']), async(req, res) => {
     let user = req.user
     let admin = false
-    user.rol==='admin' && (admin = true)
+    if (user && user.rol === 'admin') admin = true
     res.status(200).render('home', {user: user, admin})
 })
 
@@ -47,7 +47,7 @@ router.get('/chat', passportCall("current"), auth(['user', 'premium']), async(re
 
     try {
         let admin = false
-        req.user.rol==='admin' && (admin = true)
+        if (req.user && req.user.rol === 'admin') admin = true
     
         res.setHeader('Content-Type','text/html')
         return res.status(200).render('chat', {user: req.user, admin})
@@ -80,7 +80,7 @@ router.get('/products', auth(['public']),  async(req, res) => {
     //let user = req.session.user //Con sessions
     let user = req.user
     let admin = false
-    
+
     if (user && user.rol === 'admin') admin = true
 
     try {
@@ -107,7 +107,7 @@ router.get('/carts/:cid', passportCall("current"), auth(['user', 'premium', 'adm
 
     let {cid} = req.params
     let admin = false
-    req.user.rol==='admin' && (admin = true)
+    if (req.user && req.user.rol === 'admin') admin = true
 
     try {
 
@@ -149,7 +149,7 @@ router.get('/login', auth(['public']), (req, res)=>{
 router.get('/mockingproducts', auth(['public']),  async(req, res) => {
 
     let admin = false
-    req.user.rol==='admin' && (admin = true)
+    if (req.user && req.user.rol === 'admin') admin = true
 
     try {
 
@@ -194,7 +194,7 @@ router.get('/settings', passportCall("current"), auth(['admin']), async(req, res
     
     try {
         let admin = false
-        req.user.rol==='admin' && (admin = true)
+        if (req.user && req.user.rol === 'admin') admin = true
     
         let users = await userService.getUsers()
         users = users.map(user => new UserDTO2(user))
