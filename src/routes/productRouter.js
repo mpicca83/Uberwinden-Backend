@@ -4,7 +4,7 @@ import { validateExistence } from '../validators/validateExistence.js'
 import { Router } from 'express'
 import { auth } from '../middleware/auth.js'
 import { passportCall } from '../utils.js'
-import { ProcuctController } from '../controller/productController.js'
+import { ProcuctController } from '../controller/ProductController.js'
 
 export const router=Router()
 

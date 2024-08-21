@@ -19,3 +19,9 @@ const documents = [
 router.post('/premium/:uid', passportCall('current'), auth(['admin']), validateObjectId, validateExistence, validateRol, UserController.updateRol)
 
 router.post('/:uid/documents', passportCall('current'), auth(['user', 'premium']), validateObjectId, validateExistence, upload.fields(documents), validateUploadDocument, UserController.updateDocuments)
+
+router.get('/', passportCall('current'), auth(['admin']), UserController.getUsers)
+
+router.delete('/remove', passportCall('current'), auth(['admin']), UserController.deleteInactiveUsers)
+
+router.delete('/delete/:uid', passportCall('current'), auth(['admin']), validateObjectId, validateExistence, UserController.deleteUser)

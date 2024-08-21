@@ -27,7 +27,7 @@ export class UserController{
             let token = jwt.sign({email}, SECRET, {expiresIn: "1h"})
             
             //genera cuerpo del email
-            const htmlConten = () => {
+            const htmlContent = () => {
                 let html = `
                     <p>Para restablecer la contraseña debe ingresar al siguinete enlace:</p>
                     </br>
@@ -35,7 +35,7 @@ export class UserController{
                 return html
             }
 
-            sendEmail(email, 'Überwinden - Restablecer contraseña', htmlConten())
+            sendEmail(email, 'Überwinden-Ecommerce: Restablecer contraseña', htmlContent())
         
             res.setHeader('Content-Type','application/json')
             return res.status(200).json({
@@ -136,7 +136,7 @@ export class UserController{
     static updateRol = async(req, res) => {
 
         const { uid } = req.params
-        const { rol } = req.body
+        const newRol  = req.body.rol
 
         let identification = null
         let addressProof = null
@@ -144,38 +144,49 @@ export class UserController{
 
         
         try {
+
+            const {documents, rol} = await userService.getUserBy({_id: uid})
             
-            const {documents} = await userService.getUserBy({_id: uid})
+            if(rol !== 'admin'){
+                
+                if(documents){
+                    identification = documents.find(data => data.name === 'identification')
+                    addressProof = documents.find(data => data.name === 'addressProof')
+                    bankStatement = documents.find(data => data.name === 'bankStatement')
+                }
+                
+                if( newRol === 'premium' && ( !identification || !addressProof || !bankStatement )){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(409).json({
+                        status: 'error',
+                        error: 'Conflict',
+                        message: `El usuario no ha terminado de procesar su documentación.`,
+                    })
+                }
 
-            if(documents){
-                identification = documents.find(data => data.name === 'identification')
-                addressProof = documents.find(data => data.name === 'addressProof')
-                bankStatement = documents.find(data => data.name === 'bankStatement')
-            }
-            
-            if( rol === 'premium' && ( !identification || !addressProof || !bankStatement )){
-                res.setHeader('Content-Type','application/json')
-                return res.status(200).json({
-                    status: 'error',
-                    message: `El usuario con id ${uid} no ha terminado de procesar su documentación.`,
-                })
-            }
+                const updateUser = await userService.updateUser(uid, { rol: newRol })
 
-            const updateUser = await userService.updateUser(uid, { rol: rol })
-
-            if(updateUser){
-                res.setHeader('Content-Type','application/json')
-                return res.status(200).json({
-                    status: 'success',
-                    message: 'El rol se actualizó correctamente.',
-                    payload: new UserDTO(updateUser)
-                })
+                if(updateUser){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(200).json({
+                        status: 'success',
+                        message: 'El rol se actualizó correctamente.',
+                        payload: new UserDTO(updateUser)
+                    })
+                }else{
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(500).json({
+                        status: 'error',
+                        error: 'Internal Server Error',
+                        message: 'No se pudo actualizar el rol, por favor vuelva a intentar.',
+                    })
+                }
             }else{
                 res.setHeader('Content-Type','application/json')
-                return res.status(500).json({
+                return res.status(403).json({
                     status: 'error',
-                    error: 'Internal Server Error',
-                    message: 'No se pudo actualizar el rol, por favor vuelva a intentar.',
+                    error: 'Forbidden',
+                    message:`No es posible modificar un usuario Administrador.`
                 })
             }
             
@@ -204,7 +215,7 @@ export class UserController{
                 let {documents} = await userService.getUserBy({ _id: uid })
                 const newDocuments = req.files
                 
-                if(!newDocuments){
+                if(!newDocuments || Object.keys(newDocuments).length === 0){
                     res.setHeader('Content-Type','application/json')
                     return res.status(400).json({
                         status: 'error',
@@ -254,6 +265,150 @@ export class UserController{
                     status: 'error',
                     error: 'Forbidden',
                     message: 'No posee los permisos suficientes para realizar esta acción.',
+                })
+            }
+            
+        } catch (error) {
+            req.logger.error(error.message)
+            res.setHeader('Content-Type','application/json')
+            return res.status(500).json(
+                {
+                    status: 'error',
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+                }
+            )
+        }
+    }
+
+    static getUsers = async(req, res) => {
+
+        try {
+            
+            let users = await userService.getUsers()
+
+            users = users.map(user => new UserDTO(user))
+        
+            if(users){
+                res.setHeader('Content-Type','application/json')
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'Detalle de usuarios activos.',
+                    payload: users
+                })
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(500).json({
+                    status: 'error',
+                    error: 'Internal Server Error',
+                    message: 'No se pudo obtener los datos de los usuarios, por favor vuelva a intentar.',
+                })
+            }
+            
+        } catch (error) {
+            req.logger.error(error.message)
+            res.setHeader('Content-Type','application/json')
+            return res.status(500).json(
+                {
+                    status: 'error',
+                    error: 'Internal Server Error',
+                    message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+                }
+            )
+        }
+    }
+
+    static deleteUser = async(req, res) =>{
+        const { uid } = req.params
+        const { user } = req
+            
+        try {
+
+            if(user._id !== uid){
+
+                const result = await userService.deleteUser(uid)
+                
+                if(result){
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(200).json({
+                        status: 'success',
+                        message:`Usuario eliminado correctamente.`
+                    })
+                }else{
+                    res.setHeader('Content-Type','application/json')
+                    return res.status(404).json({
+                        status: 'error',
+                        error: 'Not Found',
+                        message:`El usuario no pudo ser eliminado, por favor intente nuevamente.`
+                    })
+                }
+
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(403).json({
+                    status: 'error',
+                    error: 'Forbidden',
+                    message:`No es posible eliminar su propio usuario.`
+                })
+            }
+
+        } catch (error) {
+            req.logger.error(error.message)
+            console.log(error);
+            
+            res.setHeader('Content-Type','application/json')
+            return res.status(500).json({
+                status: 'error',
+                error: 'Internal Server Error',
+                message:'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+            })
+
+        }
+    }
+
+    static deleteInactiveUsers = async(req, res) => {
+
+        try {
+
+            let usersRemove = []
+            const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+            const users = await userService.getUsers()
+            const htmlContent = () => {
+                let html = `
+                    <p>Estimado usuario,</p>
+                    <p>Le informamos que su cuenta ha sido eliminada debido a inactividad.</p>
+                    <p>Si desea volver a ingresar, por favor registre nuevamente sus datos.</p>
+                    <br/>
+                    <p>Atentamente,</p>
+                    <p>El equipo de Überwinden-Ecommerce</p>
+                `
+                return html
+            }
+            
+            for ( const user of users){
+
+                const lastConnectionDate = new Date(user.last_connection)
+                
+                if(user.rol !== 'admin' && (lastConnectionDate < twoDaysAgo || !user.last_connection)){            
+                    usersRemove.push(new UserDTO(user))
+                    
+                    sendEmail(user.email, 'Überwinden-Ecommerce: Notificación de Eliminación de Cuenta por Inactividad', htmlContent())
+                    await userService.deleteUser(user._id)
+                }
+            }
+        
+            if(usersRemove.length > 0){
+                res.setHeader('Content-Type','application/json')
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'Usuarios eliminados.',
+                    payload: usersRemove
+                })
+            }else{
+                res.setHeader('Content-Type','application/json')
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'No se encontraron usuarios inactivos.'
                 })
             }
             

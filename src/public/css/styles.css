@@ -334,3 +334,28 @@ ul {
 .restablecer{
     margin-top: 60px;
 }
+
+.contenedorUsers{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    justify-content: space-evenly;
+    width: 60%;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.liUsers{
+    display: grid;
+    grid-template-columns: repeat(2, 2fr) repeat(3, 1fr);
+    justify-items: center;
+    align-items: center;
+    gap: 10px;
+    margin: 2px 0;
+    padding: 0 0 0 15px;
+}
+
+.tituloUsers{
+    font-size: 15px;
+    font-weight: bold;
+}

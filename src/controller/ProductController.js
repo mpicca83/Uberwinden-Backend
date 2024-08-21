@@ -1,6 +1,8 @@
 import { io } from '../app.js'
 import { config } from '../config/config.js'
 import { productService } from '../repositories/ProductService.js'
+import { email as sendEmail } from '../helpers/email.js'
+
 
 const { PORT } = config
 
@@ -197,13 +199,29 @@ export class ProcuctController{
 
         const {pid} = req.params
         const {user} = req
+
     
         try {
             
             const product = await productService.getProductBy({_id:pid})
-            if(user.rol === 'admin' || user.rol === 'premium' && user.email === product.owner){
+
+            const htmlContent = () => {
+                let html = `
+                    <p>Estimado usuario,</p>
+                    <p>Le informamos que su producto <strong>${product.title}</strong> con código <strong>${product.code}</strong> ha sido eliminado de nuestra plataforma.</p>
+                    <p>Si considera que esto es un error o desea obtener más información, por favor póngase en contacto con nuestro equipo de soporte.</p>
+                    <br/>
+                    <p>Atentamente,</p>
+                    <p>El equipo de Überwinden-Ecommerce</p>
+                `
+                return html
+            }
+    
+            if(user.rol === 'admin' || (user.rol === 'premium' && user.email === product.owner)){
                 
                 await productService.deleteProduct(pid)
+
+                product.owner !== 'admin' && sendEmail(product.owner, 'Überwinden-Ecommerce: Notificación de Eliminación de Producto', htmlContent())
 
                 const products = await productService.getProducts()
                 io.emit('productsAll', { products })

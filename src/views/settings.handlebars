@@ -1,0 +1,39 @@
+<div class="encabezado">
+    <h2 class="titulo">Usuarios registrados</h2>
+    {{>menu}}
+</div>
+<div class="encabezadoF"></div>
+
+<ul class="contenedorUsers">
+    <li class="liUsers">
+        <div class="tituloUsers">NOMBRE</div>
+        <div class="tituloUsers">EMAIL</div>
+        <div class="tituloUsers">ROL</div>
+        <div class="tituloUsers"></div>
+        <div class="tituloUsers"></div>
+    </li>
+
+    {{#unless users}}
+        <p class="vacio"><i>Esto es un desierto...</i></p>
+    {{/unless }}
+
+    {{#each users}}
+        <li class="liUsers articulos">
+           
+            <div class="artProducto">{{this.full_name}}</div>
+            <div class="">{{this.email}}</div>
+            <div class="">{{this.rol}}</div>
+            <div class="card-body text-center">
+                <button onclick="modificar('{{this.id}}')" class="btn btn-secondary botonModificar">Cambiar Rol</button>
+            </div>  
+            <div class="card-body text-center">
+                <button onclick="eliminar('{{this.id}}')" class="btn btn-danger botonEliminar">Eliminar</button>
+            </div>
+
+        </li>
+        
+    {{/each}}
+</ul>
+
+
+<script src="js/settings.js"></script>

@@ -4,11 +4,7 @@ const storage = multer.diskStorage({
     destination: function (req, file, cb) {
 
         let folder = './src/uploads'
-
-        if(!file){
-            return cb(new Error("El archivo no se cargar, por favor volver a intentar."))
-        }
-
+        
         if(file.fieldname === 'identification' || file.fieldname === 'addressProof' || file.fieldname === 'bankStatement'){
             folder = folder+'/documents'
         }else if(file.fieldname === 'products'){

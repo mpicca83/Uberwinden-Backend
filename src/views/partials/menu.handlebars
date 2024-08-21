@@ -10,6 +10,13 @@
         <li>
             <a class="liMenu" href="/chat">Chat</a>
         </li>
+        
+        {{#if admin}}
+            <li>
+                <a class="liMenu" href="/settings">Settings</a>
+            </li>
+        {{/if}}
+
         <li>
             <a class="liMenu" href="/api/sessions/logout?web=true">Cerrar Sesión</a>
         </li>
@@ -21,5 +28,6 @@
             <a class="liMenu" href="/register">Registrate</a>
         </li>
     {{/if}}
+
 
 </ul>
