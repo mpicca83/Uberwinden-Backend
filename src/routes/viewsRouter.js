@@ -80,7 +80,8 @@ router.get('/products', auth(['public']),  async(req, res) => {
     //let user = req.session.user //Con sessions
     let user = req.user
     let admin = false
-    user.rol==='admin' && (admin = true)
+    
+    if (user && user.rol === 'admin') admin = true
 
     try {
 
