@@ -11,7 +11,7 @@ class MessageService {
     }
 
     addMessage = async (message) => {
-        return await this.dao.create(message)
+        return await this.dao.addMessage(message)
     }
 }
 

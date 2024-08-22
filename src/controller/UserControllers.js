@@ -5,7 +5,7 @@ import { config } from '../config/config.js'
 import { generaHash, validaPassword } from '../utils.js'
 import { UserDTO } from '../dto/UserDTO.js'
 
-const { SECRET, PORT } = config
+const { SECRET, PORT, EXTERNAL_HOST_URL } = config
 
 export class UserController{
 
@@ -25,13 +25,20 @@ export class UserController{
             }
 
             let token = jwt.sign({email}, SECRET, {expiresIn: "1h"})
+
+            let url = ''
+            if(EXTERNAL_HOST_URL){
+                url = EXTERNAL_HOST_URL
+            }else{
+                url = `http://localhost:${PORT}`
+            }
             
             //genera cuerpo del email
             const htmlContent = () => {
                 let html = `
                     <p>Para restablecer la contraseña debe ingresar al siguinete enlace:</p>
                     </br>
-                    <a href="http://localhost:${PORT}/resetPassword?token=${token}">Restablecer contraseña</a>`
+                    <a href="${url}/resetPassword?token=${token}">Restablecer contraseña</a>`
                 return html
             }
 
