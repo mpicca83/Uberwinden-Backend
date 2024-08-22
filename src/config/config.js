@@ -35,6 +35,6 @@ export const config={
     PASS_NODEMAILER: process.env.PASS_NODEMAILER,
     FROM_NODEMAILER: process.env.FROM_NODEMAILER,
     EMAIL_ADMIN: process.env.EMAIL_ADMIN,
-    PASSWORD_ADMIN: process.env.PASSWORD_ADMIN
-
+    PASSWORD_ADMIN: process.env.PASSWORD_ADMIN,
+    HOST_URL: process.env.HOST_URL
 }

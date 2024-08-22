@@ -75,11 +75,7 @@ const options={
             {
                 url: "http://localhost:8080",
                 description: "Development"
-            },
-            {
-                url: "http://localhost:3001",
-                description: "Production"
-            },
+            }
         ]
     },
     apis:['./src/docs/*.yaml']
