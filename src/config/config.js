@@ -3,7 +3,7 @@ import {Command, Option} from "commander"
 
 let programa=new Command()
 
-programa.addOption(new Option("-m, --mode <modo>", "Modo de ejecución.").choices(["dev", "prod"]).default("dev"))
+programa.addOption(new Option("-m, --mode <modo>", "Modo de ejecución.").choices(["dev", "prod"]).default("prod"))
 
 programa.parse()
 const argumentos=programa.opts()
@@ -14,7 +14,7 @@ console.log(`Conectado en modo: ${runMode}`)
 
 dotenv.config(
     {
-        path: runMode==="prod"?"./src/.env.production":"./src/.env.development",
+        path: './src/.env',
         override: true
     }
 )

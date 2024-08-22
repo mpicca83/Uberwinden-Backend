@@ -20,13 +20,9 @@ Este es un proyecto para la "Entrega Final" en el curso de Programación Backend
 
 *Deve levantar el servidor en modo dev y luego en otra terminal ingresar:* ``` npm test ```
 
-**Para realizar el test de los log debe acceder a la siguientes rutas:**
+**Para realizar el test de los log debe acceder a la siguiente ruta:**
 
-En modo dev:
 ``` localhost:8080/api/loggerTest ```
-
-En modo prod:
-``` localhost:3001/api/loggerTest ```
 
 
 
