@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "mocha ./test/**/*.js -- --exit",
-    "start": "node ./src/app.js",
+    "start": "node ./src/app.js -m prod",
     "dev": "nodemon ./src/app.js"
   },
   "keywords": [],

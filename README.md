@@ -7,14 +7,12 @@ Este es un proyecto para la "Entrega Final" en el curso de Programación Backend
 **Para iniciar en "Modo Development"**
 
 ``` npm run dev ```
-<br>
-``` npm run dev -- -m dev ```
+
 
 **Para iniciar en "Modo Production"**
 
-``` npm run dev -- -m prod ```
-<br>
-``` npm start -- -m prod ```
+``` npm start ```
+
 
 **Para iniciar el "Testing"**
 
