@@ -353,9 +353,7 @@ export class UserController{
             }
 
         } catch (error) {
-            req.logger.error(error.message)
-            console.log(error);
-            
+            req.logger.error(error.message)            
             res.setHeader('Content-Type','application/json')
             return res.status(500).json({
                 status: 'error',
