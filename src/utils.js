@@ -23,7 +23,7 @@ export const passportCall = (strategy) => {
                 return res.status(info.statusCode ? info.statusCode : 401).json({
                     status: 'error',
                     error: info.type ? info.type : 'Unauthorized',
-                    message: info.message ? info.message : info.toStryng()
+                    message: info.message ? info.message : info.toString()
                 })
             }
         
